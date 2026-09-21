@@ -14,6 +14,27 @@ website/
   assets/js/main.js
 ```
 
+## Interactive preview
+
+`preview.html` is a single file build of the whole site: all five pages, the
+stylesheet and the script inlined, with client side routing. Open it directly
+in a browser, no server needed. It exists because some preview sandboxes will
+not navigate between separate html files, so the normal five page build
+cannot be clicked through in them.
+
+It is generated, not hand written. Regenerate it after any content change:
+
+```bash
+python3 build_preview.py
+```
+
+Edit the real pages and re-run that. Do not edit `preview.html` by hand, the
+next build overwrites it. The five page version in this folder remains the
+one you deploy: separate pages are better for hosting and for search engines.
+
+Note that the contact form inside the preview is live, not a mockup. Anything
+submitted from it really is sent.
+
 ## Contact form delivery
 
 The form posts to [FormSubmit](https://formsubmit.co) which forwards each
