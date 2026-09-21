@@ -14,28 +14,49 @@ website/
   assets/js/main.js
 ```
 
-## Before you go live
+## Contact form delivery
 
-Three things need your real information. Search for these strings:
+The form posts to [FormSubmit](https://formsubmit.co) which forwards each
+enquiry to **support@raftertechnologies.com**. Nothing is stored on the site.
 
-| Where | What to replace |
-|---|---|
-| `contact.html` | `REPLACE_WITH_YOUR_EMAIL` and `REPLACE_WITH_YOUR_NUMBER` |
-| `contact.html` | "Add your office address here" and "Add your working hours here" |
-| `contact.html` | The form does not send anything yet. See below. |
+**One time activation.** The first time anyone submits the form, FormSubmit
+sends a confirmation email to support@raftertechnologies.com asking you to
+approve the address. **Click that link once.** Until you do, submissions are
+held and will not reach you. Send yourself one test message after the site is
+live and confirm it.
 
-### Connecting the contact form
-
-The form validates in the browser but nothing is delivered anywhere. To make
-it live, give the form a real endpoint and remove the demo flag:
+The address and the service are set as attributes on the form in
+`contact.html`, so neither is buried in the JavaScript:
 
 ```html
 <form class="form" id="enquiry" novalidate
-      action="https://your-endpoint-here" method="post">
+      data_endpoint="https://formsubmit.co/ajax/"
+      data_inbox="support@raftertechnologies.com">
 ```
 
-Delete the `data_demo="true"` attribute. Any form service works (Formspree,
-Basin, Netlify Forms) or your own server script.
+To change the inbox, edit `data_inbox`. To move to a different provider
+(Formspree, Basin, your own script), change `data_endpoint` to a service that
+accepts JSON and returns `{"success": "true"}`.
+
+If the request fails for any reason, the visitor is shown your email address
+and asked to write directly, so an enquiry is never silently lost.
+
+### Note on privacy
+
+Submissions pass through FormSubmit's servers on the way to you. If you would
+rather enquiries never touch a third party, you need a small server side
+script on your own hosting instead. Worth considering given you collect
+people's career details.
+
+## Contact details on the site
+
+| Where | Value |
+|---|---|
+| Contact page and every footer | support@raftertechnologies.com |
+| Contact page and every footer | +91 80528 39537 |
+
+There is no office address or opening hours shown anywhere. If you want them
+added later, they belong in the `contactlist` block in `contact.html`.
 
 ## Design system
 

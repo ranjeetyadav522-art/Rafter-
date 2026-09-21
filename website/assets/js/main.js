@@ -110,15 +110,26 @@
     }
   });
 
-  form.addEventListener('submit', function (e) {
-    var failed = [];
+  var button = form.querySelector('button[type=submit]');
+  var inbox = form.getAttribute('data_inbox');
+  var endpoint = form.getAttribute('data_endpoint');
 
+  function announce(text, ok) {
+    sent.textContent = text;
+    sent.style.borderColor = ok ? '#0a0a0a' : '#b91c1c';
+    sent.hidden = false;
+    sent.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    var failed = [];
     rules.forEach(function (rule) {
       if (!validateOne(rule)) { failed.push(rule); }
     });
 
     if (failed.length) {
-      e.preventDefault();
       list.innerHTML = '';
       failed.forEach(function (rule) {
         var li = document.createElement('li');
@@ -139,13 +150,52 @@
 
     summary.hidden = true;
 
-    /* Demo mode. Remove data_demo once a real endpoint is set on the form. */
-    if (form.getAttribute('data_demo') === 'true') {
-      e.preventDefault();
-      sent.textContent = 'Thank you. This form is not connected to an inbox yet, so nothing has been sent. Set the form action to a real endpoint to start receiving messages.';
-      sent.hidden = false;
-      sent.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    if (!endpoint || !inbox) {
+      announce('This form is not connected to an inbox yet, so nothing has been sent.', false);
+      return;
     }
+
+    /* Disable the button while the request is in flight so a slow connection
+       cannot produce three copies of the same enquiry. */
+    var original = button.textContent;
+    button.disabled = true;
+    button.textContent = 'Sending';
+    sent.hidden = true;
+
+    var payload = {
+      name: document.getElementById('name').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      topic: document.getElementById('topic').value,
+      field: document.getElementById('domain').value.trim(),
+      message: document.getElementById('message').value.trim(),
+      _subject: 'Website enquiry: ' + document.getElementById('topic').value,
+      _template: 'table',
+      _captcha: 'false'
+    };
+
+    fetch(endpoint + inbox, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+      .then(function (res) { return res.json().catch(function () { return {}; }); })
+      .then(function (data) {
+        if (data && String(data.success) === 'true') {
+          form.reset();
+          rules.forEach(function (rule) { setError(rule, ''); });
+          announce('Thank you. Your message has been sent and we will get back to you at the address you gave us.', true);
+        } else {
+          announce('Something went wrong sending your message. Please email us directly at ' + inbox + ' and we will pick it up from there.', false);
+        }
+      })
+      .catch(function () {
+        announce('Your message could not be sent, which usually means a connection problem. Please email us directly at ' + inbox + ' and we will pick it up from there.', false);
+      })
+      .then(function () {
+        button.disabled = false;
+        button.textContent = original;
+      });
   });
 
 })();
