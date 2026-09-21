@@ -750,6 +750,340 @@ summary:focus-visible {
   white-space: nowrap;
 }
 
+/* ==========================================================================
+   Motion
+   Everything here is gated behind .js_anim, which the script adds to <html>
+   only when JavaScript runs AND the visitor has not asked for reduced
+   motion. That ordering matters: the resting state of a revealed element is
+   invisible, so if the gate were in the base stylesheet, anyone with
+   JavaScript off or reduced motion on would be left staring at a blank page.
+   Only transform and opacity are animated, so nothing triggers layout.
+   ========================================================================== */
+
+/* ---------- Scroll reveal ---------- */
+
+.js_anim .reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 520ms var(--ease), transform 520ms var(--ease);
+  will-change: opacity, transform;
+}
+
+.js_anim .reveal.seen {
+  opacity: 1;
+  transform: none;
+  will-change: auto;
+}
+
+/* Children stagger in. The delay is set inline by the script, 40ms apart,
+   which the motion guidance caps well below the point where a long row
+   starts to feel slow. */
+.js_anim .stagger > * {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 460ms var(--ease), transform 460ms var(--ease);
+}
+
+.js_anim .stagger.seen > * {
+  opacity: 1;
+  transform: none;
+}
+
+/* Sideways variants for split sections */
+.js_anim .reveal.from_left { transform: translateX(-26px); }
+.js_anim .reveal.from_right { transform: translateX(26px); }
+.js_anim .reveal.from_left.seen,
+.js_anim .reveal.from_right.seen { transform: none; }
+
+/* ---------- Hero entrance ---------- */
+
+.js_anim .hero .enter {
+  opacity: 0;
+  transform: translateY(26px);
+  animation: rise 720ms var(--ease) forwards;
+}
+
+.js_anim .hero .enter:nth-child(1) { animation-delay: 60ms; }
+.js_anim .hero .enter:nth-child(2) { animation-delay: 140ms; }
+.js_anim .hero .enter:nth-child(3) { animation-delay: 220ms; }
+.js_anim .hero .enter:nth-child(4) { animation-delay: 300ms; }
+.js_anim .hero .enter:nth-child(5) { animation-delay: 380ms; }
+.js_anim .hero .enter:nth-child(6) { animation-delay: 460ms; }
+
+@keyframes rise {
+  to { opacity: 1; transform: none; }
+}
+
+/* The angled brand shape drifts very slightly so the hero is never
+   completely static. Small amplitude on purpose: this sits behind text. */
+.js_anim .hero::after {
+  animation: drift 22s ease-in-out infinite alternate;
+}
+
+@keyframes drift {
+  from { transform: rotate(32deg) translate3d(0, 0, 0) scale(1); }
+  to   { transform: rotate(38deg) translate3d(-26px, 22px, 0) scale(1.06); }
+}
+
+/* ---------- Header on scroll ---------- */
+
+.masthead {
+  transition: background 220ms var(--ease), box-shadow 220ms var(--ease);
+}
+
+.masthead.stuck {
+  background: rgba(10, 10, 10, 0.92);
+  backdrop-filter: saturate(140%) blur(10px);
+  box-shadow: 0 1px 0 var(--ink-line), 0 8px 28px rgba(0, 0, 0, 0.35);
+}
+
+.masthead .wrap { transition: min-height 220ms var(--ease); }
+.masthead.stuck .wrap { min-height: 62px; }
+
+/* Nav underline grows from the centre rather than snapping in */
+.nav a:not(.btn) { position: relative; }
+
+.nav a:not(.btn)::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 4px;
+  height: 2px;
+  background: var(--orange);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 220ms var(--ease);
+}
+
+.nav a:not(.btn):hover::after,
+.nav a:not(.btn)[aria-current="page"]::after { transform: scaleX(1); }
+
+.nav a[aria-current="page"] { box-shadow: none; }
+
+/* ---------- Cards ---------- */
+
+.card {
+  transition: border-color var(--speed) var(--ease),
+              transform 320ms var(--ease),
+              background 320ms var(--ease);
+}
+
+.js_anim .card:hover { transform: translateY(-5px); }
+
+/* A thin orange edge wipes across the top of a card on hover. */
+.card { position: relative; overflow: hidden; }
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: var(--orange);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 340ms var(--ease);
+}
+
+.card:hover::before { transform: scaleX(1); }
+
+.card .more svg { transition: transform 240ms var(--ease); }
+.card:hover .more svg { transform: translateX(5px); }
+
+/* ---------- Buttons ---------- */
+
+.btn { position: relative; overflow: hidden; }
+
+.js_anim .btn:hover { transform: translateY(-2px); }
+.js_anim .btn:active { transform: translateY(0); }
+
+.btn { transition: background var(--speed) var(--ease), color var(--speed) var(--ease),
+                   border-color var(--speed) var(--ease), transform 200ms var(--ease); }
+
+/* ---------- Bento grid ---------- */
+
+.bento {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--s3);
+}
+
+.bento .card { border-radius: 6px; }
+.bento .wide { grid-column: span 2; }
+.bento .tall { grid-row: span 2; }
+
+.bento .feature {
+  grid-column: span 2;
+  grid-row: span 2;
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--white);
+  justify-content: space-between;
+}
+
+.bento .feature h3 { color: var(--white); font-size: 1.6rem; }
+.bento .feature p { color: #d4d4d4; font-size: 1.03rem; }
+.bento .feature .icon { color: var(--orange); width: 52px; height: 52px; }
+.bento .feature .more { color: var(--orange); }
+.bento .feature::before { background: var(--orange); }
+.js_anim .bento .feature:hover { transform: translateY(-5px); }
+
+@media (max-width: 1000px) {
+  .bento { grid-template-columns: repeat(2, 1fr); }
+  .bento .feature, .bento .wide { grid-column: span 2; }
+  .bento .feature, .bento .tall { grid-row: auto; }
+}
+
+@media (max-width: 620px) {
+  .bento { grid-template-columns: 1fr; }
+  .bento .feature, .bento .wide { grid-column: auto; }
+}
+
+/* ---------- Marquee ---------- */
+
+.marquee {
+  background: var(--orange);
+  color: var(--ink);
+  overflow: hidden;
+  padding: 15px 0;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+
+.marquee .track {
+  display: flex;
+  gap: var(--s5);
+  width: max-content;
+  align-items: center;
+}
+
+.js_anim .marquee .track { animation: slide 38s linear infinite; }
+
+.marquee:hover .track,
+.marquee:focus-within .track { animation-play-state: paused; }
+
+.marquee span {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s5);
+}
+
+.marquee span::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  background: var(--ink);
+  border-radius: 50%;
+  flex: 0 0 7px;
+}
+
+@keyframes slide {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* Pausing a marquee is a WCAG requirement, not a nicety. */
+.marquee_stop {
+  position: absolute;
+  right: var(--s3);
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--ink);
+  color: var(--white);
+  border: 0;
+  border-radius: 3px;
+  font-family: var(--font-head);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 9px 13px;
+  min-height: 36px;
+  cursor: pointer;
+}
+
+.marquee { position: relative; }
+.marquee.paused .track { animation-play-state: paused !important; }
+
+@media (max-width: 720px) { .marquee_stop { display: none; } }
+
+/* ---------- Step numbers ---------- */
+
+.step { transition: border-top-color 300ms var(--ease); }
+.step:hover { border-top-color: var(--orange); }
+
+.js_anim .step .num {
+  display: inline-block;
+  transition: transform 320ms var(--ease);
+}
+
+.js_anim .step:hover .num { transform: translateY(-4px); }
+
+/* ---------- Track rows ---------- */
+
+.tracks li { transition: background 240ms var(--ease), padding-left 240ms var(--ease); }
+.js_anim .tracks li:hover { background: var(--paper); padding-left: 12px; }
+.section.dark .tracks li:hover { background: var(--ink-soft); }
+
+.tracks .tick { transition: transform 260ms var(--ease); }
+.js_anim .tracks li:hover .tick { transform: scale(1.22); }
+
+/* ---------- Panels and band ---------- */
+
+.panel { transition: transform 320ms var(--ease), border-color 320ms var(--ease); }
+.js_anim .panel:hover { transform: translateY(-4px); }
+
+.band { position: relative; overflow: hidden; }
+
+.band::after {
+  content: "";
+  position: absolute;
+  left: -120px;
+  bottom: -160px;
+  width: 420px;
+  height: 420px;
+  border: 40px solid rgba(10, 10, 10, 0.07);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.js_anim .band::after { animation: drift 26s ease-in-out infinite alternate; }
+
+/* ---------- Routed page transition, preview only ---------- */
+
+.js_anim .routed:not([hidden]) {
+  animation: pagein 380ms var(--ease);
+}
+
+@keyframes pagein {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ---------- Reduced motion, belt and braces ----------
+   The script already withholds .js_anim, so these rules should never be
+   needed. They are here in case the class is ever added by other means. */
+
+@media (prefers-reduced-motion: reduce) {
+  .js_anim .reveal,
+  .js_anim .stagger > *,
+  .js_anim .hero .enter {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+  .js_anim .marquee .track,
+  .js_anim .hero::after,
+  .js_anim .band::after { animation: none !important; }
+}
+
 
 .previewbar {
   background: #171717;
@@ -794,11 +1128,11 @@ summary:focus-visible {
 
   <section class="hero">
     <div class="wrap">
-      <span class="eyebrow">Rafter Technologies</span>
-      <h1>Training that makes you ready for the <em>actual job</em>, not just the syllabus.</h1>
-      <p class="lede">Most people finish a course and still freeze on day one, because nobody showed them how the work really happens. We train you on real projects, the way the industry runs them, one to one, across IT and non IT domains.</p>
+      <span class="eyebrow enter">Rafter Technologies</span>
+      <h1 class="enter">Training that makes you ready for the <em>actual job</em>, not just the syllabus.</h1>
+      <p class="lede enter">Most people finish a course and still freeze on day one, because nobody showed them how the work really happens. We train you on real projects, the way the industry runs them, one to one, across IT and non IT domains.</p>
 
-      <ul class="tagstrip">
+      <ul class="tagstrip enter">
         <li>Software Development</li>
         <li>Cyber Security</li>
         <li>Electrical</li>
@@ -808,12 +1142,12 @@ summary:focus-visible {
         <li>Data</li>
       </ul>
 
-      <div class="btnrow">
+      <div class="btnrow enter">
         <a class="btn primary" href="#/contact">Book a free consultation</a>
         <a class="btn ghost" href="#/training">See training domains</a>
       </div>
 
-      <div class="herofoot">
+      <div class="herofoot enter">
         <div><strong>Project based</strong><span>You work on real deliverables, not slides</span></div>
         <div><strong>One to one</strong><span>Every session is personal, never a crowded batch</span></div>
         <div><strong>IT and non IT</strong><span>Engineering domains included, not only software</span></div>
@@ -822,15 +1156,21 @@ summary:focus-visible {
     </div>
   </section>
 
+
+  <div class="marquee" role="group" aria-label="Domains we train">
+    <div class="track">
+      <span>Software Development</span><span>Cyber Security</span><span>Electrical Engineering</span><span>Mechanical Engineering</span><span>Cloud and DevOps</span><span>Testing and Quality</span><span>Data and Analytics</span><span>Web Development</span><span>Resume Writing</span><span>Job Support</span>
+    </div>
+  </div>
   <section class="section">
     <div class="wrap">
-      <span class="eyebrow">What we do</span>
-      <h2>Four ways we move your career forward.</h2>
-      <p class="lede" style="margin-bottom:var(--s5)">We are not only a training company. We stay involved from the first lesson through the interview and into the job itself.</p>
+      <span class="eyebrow reveal">What we do</span>
+      <h2 class="reveal">Four ways we move your career forward.</h2>
+      <p class="lede reveal" style="margin-bottom:var(--s5)">We are not only a training company. We stay involved from the first lesson through the interview and into the job itself.</p>
 
-      <div class="grid g4">
+      <div class="bento stagger">
 
-        <article class="card">
+        <article class="card feature">
           <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M12 3 2 8l10 5 10-5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
             <path d="M5 10.5V16c0 1.7 3.1 3 7 3s7-1.3 7-3v-5.5M21 8.6v5.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
@@ -867,7 +1207,7 @@ summary:focus-visible {
           </a>
         </article>
 
-        <article class="card">
+        <article class="card wide">
           <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <rect x="2.5" y="4" width="19" height="13" rx="2" stroke="currentColor" stroke-width="1.6"/>
             <path d="M8 20h8M12 17v3M7 9l-2 2 2 2M15 9l2 2-2 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
@@ -886,7 +1226,7 @@ summary:focus-visible {
   <section class="section dark">
     <div class="wrap">
       <div class="split">
-        <div>
+        <div class="reveal from_left">
           <span class="eyebrow">Why we are different</span>
           <h2>Experience is the thing nobody will give you. So we build it first.</h2>
           <p class="lede">Every fresher runs into the same wall. The job wants experience, and no job will give you the experience. We close that gap by putting you inside the work before you ever sit in an interview.</p>
@@ -895,7 +1235,7 @@ summary:focus-visible {
           </div>
         </div>
 
-        <div class="grid" style="gap:var(--s3)">
+        <div class="grid stagger" style="gap:var(--s3)">
           <article class="card">
             <h3>You build, you do not just watch</h3>
             <p>Training runs on live projects with requirements, reviews, deadlines and corrections, exactly like a delivery team.</p>
@@ -915,14 +1255,14 @@ summary:focus-visible {
 
   <section class="section">
     <div class="wrap">
-      <span class="eyebrow">Every domain, not one</span>
-      <h2>We train across IT and non IT.</h2>
-      <p class="lede" style="margin-bottom:var(--s5)">A mechanical engineer and a security analyst need very different training, and both deserve it done properly. We run separate tracks with trainers who have actually worked in that field.</p>
+      <span class="eyebrow reveal">Every domain, not one</span>
+      <h2 class="reveal">We train across IT and non IT.</h2>
+      <p class="lede reveal" style="margin-bottom:var(--s5)">A mechanical engineer and a security analyst need very different training, and both deserve it done properly. We run separate tracks with trainers who have actually worked in that field.</p>
 
       <div class="split">
-        <div>
+        <div class="reveal from_left">
           <h3 style="color:var(--orange-text)">Information technology</h3>
-          <ul class="tracks">
+          <ul class="tracks reveal">
             <li><svg class="tick" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Software and web development</strong><br><span>Front end, back end, full stack and databases</span></div></li>
             <li><svg class="tick" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Cyber security</strong><br><span>Security operations, assessment and defensive practice</span></div></li>
             <li><svg class="tick" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Cloud and DevOps</strong><br><span>Deployment, pipelines, monitoring and infrastructure</span></div></li>
@@ -933,7 +1273,7 @@ summary:focus-visible {
 
         <div>
           <h3 style="color:var(--orange-text)">Core engineering and non IT</h3>
-          <ul class="tracks">
+          <ul class="tracks reveal">
             <li><svg class="tick" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Electrical engineering</strong><br><span>Design practice, drawings, standards and site reality</span></div></li>
             <li><svg class="tick" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Mechanical engineering</strong><br><span>Design, drafting, documentation and production flow</span></div></li>
             <li><svg class="tick" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Design and drafting</strong><br><span>Industry tools and the drawing standards teams expect</span></div></li>
@@ -951,9 +1291,9 @@ summary:focus-visible {
 
   <section class="section paper">
     <div class="wrap">
-      <span class="eyebrow">How it works</span>
-      <h2>Four steps from where you are to where you want to be.</h2>
-      <div class="grid g4" style="margin-top:var(--s5)">
+      <span class="eyebrow reveal">How it works</span>
+      <h2 class="reveal">Four steps from where you are to where you want to be.</h2>
+      <div class="grid g4 stagger" style="margin-top:var(--s5)">
         <div class="step"><span class="num">01</span><h3>We talk first</h3><p>A free conversation about your background, your target role and what is realistically missing right now.</p></div>
         <div class="step"><span class="num">02</span><h3>We plan your track</h3><p>You get a plan built for your domain and your pace, with clear outcomes rather than a fixed syllabus.</p></div>
         <div class="step"><span class="num">03</span><h3>You do the work</h3><p>One to one sessions on live projects. You deliver, you get reviewed, you correct. Same loop as a real team.</p></div>
@@ -963,7 +1303,7 @@ summary:focus-visible {
   </section>
 
   <section class="band">
-    <div class="wrap inner">
+    <div class="wrap inner reveal">
       <div>
         <h2>Tell us your target role. We will tell you the honest gap.</h2>
         <p>No pressure and no obligation. If we are not the right fit for your field, we will say so directly.</p>
@@ -977,7 +1317,7 @@ summary:focus-visible {
   <section class="section">
     <div class="wrap">
       <div class="split">
-        <div class="panel">
+        <div class="panel reveal from_left">
           <span class="eyebrow">For job seekers</span>
           <h3 style="font-size:1.5rem">You want the first job, or a better one.</h3>
           <p>Whether you are fresh out of college with no experience at all, or you have been applying for months with nothing coming back, the problem is usually the same. You can answer questions about the subject but not about the work.</p>
@@ -987,7 +1327,7 @@ summary:focus-visible {
           </div>
         </div>
 
-        <div class="panel filled">
+        <div class="panel filled reveal from_right">
           <span class="eyebrow">For companies</span>
           <h3 style="font-size:1.5rem">You need the work delivered.</h3>
           <p>The same team that trains also builds. We take on web development, software projects and cyber security work for businesses that want a dependable partner rather than a rotating vendor.</p>
@@ -1005,10 +1345,10 @@ summary:focus-visible {
 
   <section class="hero" style="padding:var(--s7) 0 var(--s6)">
     <div class="wrap">
-      <span class="eyebrow">Training</span>
-      <h1>Every domain gets a <em>real track</em>, not a recycled syllabus.</h1>
-      <p class="lede">We train across information technology and core engineering. A mechanical engineer and a security analyst need completely different preparation, so we do not pretend one course fits both.</p>
-      <div class="btnrow">
+      <span class="eyebrow enter">Training</span>
+      <h1 class="enter">Every domain gets a <em>real track</em>, not a recycled syllabus.</h1>
+      <p class="lede enter">We train across information technology and core engineering. A mechanical engineer and a security analyst need completely different preparation, so we do not pretend one course fits both.</p>
+      <div class="btnrow enter">
         <a class="btn primary" href="#/contact">Ask about your domain</a>
         <a class="btn ghost" href="#method">How training runs</a>
       </div>
@@ -1021,7 +1361,7 @@ summary:focus-visible {
       <h2>Built the way delivery teams actually work.</h2>
       <p class="lede" style="margin-bottom:var(--s5)">The point is not to finish a course. The point is that on your first week in a job, nothing surprises you.</p>
 
-      <div class="grid g3">
+      <div class="grid g3 stagger">
         <article class="card">
           <h3>Live project work</h3>
           <p>You are given requirements and a deadline, then you deliver. Your work is reviewed, sent back with comments and corrected, exactly like a real team would.</p>
@@ -1057,23 +1397,23 @@ summary:focus-visible {
       <p class="lede" style="margin-bottom:var(--s5)">Each track is built around the tasks the role is actually hired to do.</p>
 
       <div class="rows" style="border-top-color:var(--ink-line)">
-        <div class="row" style="border-bottom-color:var(--ink-line)">
+        <div class="row reveal" style="border-bottom-color:var(--ink-line)">
           <h3 style="color:var(--orange)">Software and web development</h3>
           <p style="color:#a3a3a3">Front end, back end and full stack work. You build and ship a working application with a database behind it, handle change requests, and learn to read a codebase you did not write, which is most of the job in reality.</p>
         </div>
-        <div class="row" style="border-bottom-color:var(--ink-line)">
+        <div class="row reveal" style="border-bottom-color:var(--ink-line)">
           <h3 style="color:var(--orange)">Cyber security</h3>
           <p style="color:#a3a3a3">Defensive and operational security practice. Monitoring, assessment, hardening, incident handling and reporting, taught with the documentation discipline that security roles are judged on.</p>
         </div>
-        <div class="row" style="border-bottom-color:var(--ink-line)">
+        <div class="row reveal" style="border-bottom-color:var(--ink-line)">
           <h3 style="color:var(--orange)">Cloud and DevOps</h3>
           <p style="color:#a3a3a3">Deployment, build pipelines, environments, monitoring and infrastructure. You take an application from a laptop to a running, observable service.</p>
         </div>
-        <div class="row" style="border-bottom-color:var(--ink-line)">
+        <div class="row reveal" style="border-bottom-color:var(--ink-line)">
           <h3 style="color:var(--orange)">Testing and quality</h3>
           <p style="color:#a3a3a3">Manual and automation testing against live builds. Writing test cases that hold up, logging defects that developers can act on, and retesting properly.</p>
         </div>
-        <div class="row" style="border-bottom-color:var(--ink-line)">
+        <div class="row reveal" style="border-bottom-color:var(--ink-line)">
           <h3 style="color:var(--orange)">Data and analytics</h3>
           <p style="color:#a3a3a3">Working with messy real datasets, building reports and dashboards, and explaining what the numbers mean to someone who is not technical.</p>
         </div>
@@ -1088,23 +1428,23 @@ summary:focus-visible {
       <p class="lede" style="margin-bottom:var(--s5)">Core engineering graduates are underserved by most training institutes. We treat these tracks as seriously as the IT ones.</p>
 
       <div class="rows">
-        <div class="row">
+        <div class="row reveal">
           <h3 style="color:var(--orange-text)">Electrical engineering</h3>
           <p>Design practice, load calculation, drawings, standards and documentation, plus what actually happens between a drawing and a site. You finish able to read, produce and defend real drawings.</p>
         </div>
-        <div class="row">
+        <div class="row reveal">
           <h3 style="color:var(--orange-text)">Mechanical engineering</h3>
           <p>Design and drafting, tolerances, material selection, production documentation and the flow from concept to manufacturing. Built around the deliverables a junior engineer is handed in week one.</p>
         </div>
-        <div class="row">
+        <div class="row reveal">
           <h3 style="color:var(--orange-text)">Design and drafting</h3>
           <p>Industry standard tools and the drawing conventions teams expect, with review cycles so you learn to take correction the way a design office runs it.</p>
         </div>
-        <div class="row">
+        <div class="row reveal">
           <h3 style="color:var(--orange-text)">Operations and support roles</h3>
           <p>Process, coordination, reporting and stakeholder communication for business and support functions where the work is organisational rather than technical.</p>
         </div>
-        <div class="row">
+        <div class="row reveal">
           <h3 style="color:var(--orange-text)">Your field is not listed</h3>
           <p>Talk to us anyway. We will tell you honestly whether we have a trainer who has actually worked in that field. If we do not, we will say so rather than take your money.</p>
         </div>
@@ -1114,26 +1454,26 @@ summary:focus-visible {
 
   <section class="section paper">
     <div class="wrap">
-      <span class="eyebrow">Common questions</span>
-      <h2>Before you ask.</h2>
+      <span class="eyebrow reveal">Common questions</span>
+      <h2 class="reveal">Before you ask.</h2>
       <div class="faq" style="margin-top:var(--s4)">
-        <details>
+        <details class="reveal">
           <summary>I have zero experience. Is that a problem?</summary>
           <div class="answer"><p>No. That is exactly who this is built for. The whole reason we train on live projects is so that people with no experience finish with something real to talk about, and with a genuine idea of how the work is done.</p></div>
         </details>
-        <details>
+        <details class="reveal">
           <summary>Is this a batch or is it really one to one?</summary>
           <div class="answer"><p>Sessions are one to one. Your trainer works with you alone, so the pace follows you. If something is not clear you can stop and go over it again without holding anyone up.</p></div>
         </details>
-        <details>
+        <details class="reveal">
           <summary>Do you only train IT people?</summary>
           <div class="answer"><p>No. We run tracks for electrical, mechanical, design and other non IT roles as well, taught by trainers from those fields. Core engineering is not an afterthought here.</p></div>
         </details>
-        <details>
+        <details class="reveal">
           <summary>What happens after the training finishes?</summary>
           <div class="answer"><p>We write your resume, prepare you for interviews and stay available for job support once you are placed. The training is the start of the relationship, not the end of it.</p></div>
         </details>
-        <details>
+        <details class="reveal">
           <summary>How long does a track take?</summary>
           <div class="answer"><p>It depends on your domain, your starting point and how much time you can give each week. We work that out with you on the first call rather than quoting a fixed number that fits nobody.</p></div>
         </details>
@@ -1142,7 +1482,7 @@ summary:focus-visible {
   </section>
 
   <section class="band">
-    <div class="wrap inner">
+    <div class="wrap inner reveal">
       <div>
         <h2>Not sure which track fits you?</h2>
         <p>Tell us your background and the role you want. The first conversation is free and we will give you a straight answer.</p>
@@ -1156,10 +1496,10 @@ summary:focus-visible {
 
   <section class="hero" style="padding:var(--s7) 0 var(--s6)">
     <div class="wrap">
-      <span class="eyebrow">Resume, interviews and job support</span>
-      <h1>A resume that gets <em>opened</em>, and support that lasts past the offer.</h1>
-      <p class="lede">Most resumes are never read by a person. They are filtered by software first, and the good candidate is thrown out for formatting nobody warned them about. We write yours to pass that filter and then to hold up in the room.</p>
-      <div class="btnrow">
+      <span class="eyebrow enter">Resume, interviews and job support</span>
+      <h1 class="enter">A resume that gets <em>opened</em>, and support that lasts past the offer.</h1>
+      <p class="lede enter">Most resumes are never read by a person. They are filtered by software first, and the good candidate is thrown out for formatting nobody warned them about. We write yours to pass that filter and then to hold up in the room.</p>
+      <div class="btnrow enter">
         <a class="btn primary" href="#/contact">Get your resume reviewed</a>
         <a class="btn ghost" href="#support">See job support</a>
       </div>
@@ -1168,11 +1508,11 @@ summary:focus-visible {
 
   <section class="section">
     <div class="wrap">
-      <span class="eyebrow">Resume writing</span>
-      <h2>Written for the screening software and for the human after it.</h2>
-      <p class="lede" style="margin-bottom:var(--s5)">An applicant tracking system reads your resume before any recruiter does. If the structure confuses it, your application is gone before anyone knows you exist.</p>
+      <span class="eyebrow reveal">Resume writing</span>
+      <h2 class="reveal">Written for the screening software and for the human after it.</h2>
+      <p class="lede reveal" style="margin-bottom:var(--s5)">An applicant tracking system reads your resume before any recruiter does. If the structure confuses it, your application is gone before anyone knows you exist.</p>
 
-      <div class="grid g3">
+      <div class="grid g3 stagger">
         <article class="card">
           <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.6"/><path d="m20 20-3.6-3.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
@@ -1222,13 +1562,13 @@ summary:focus-visible {
   <section class="section dark" id="interview">
     <div class="wrap">
       <div class="split">
-        <div>
+        <div class="reveal from_left">
           <span class="eyebrow">Interview preparation</span>
           <h2>The call comes. Now you have to hold the room.</h2>
           <p class="lede">A good resume only buys you the conversation. What loses most candidates is being unable to talk about their own work with any confidence.</p>
           <p style="color:#d4d4d4">We run mock interviews for your specific domain, work through the technical questions you will actually face, and rehearse how you explain your projects. Then we tell you plainly what was weak, so you can fix it before it counts.</p>
         </div>
-        <div class="grid" style="gap:var(--s3)">
+        <div class="grid stagger" style="gap:var(--s3)">
           <article class="card"><h3>Domain specific mocks</h3><p>Practised against the questions your field asks, not a generic list.</p></article>
           <article class="card"><h3>Explaining your own work</h3><p>You rehearse walking through your projects clearly, which is where most interviews are won or lost.</p></article>
           <article class="card"><h3>Direct feedback</h3><p>Told exactly what sounded unconvincing while there is still time to change it.</p></article>
@@ -1243,7 +1583,7 @@ summary:focus-visible {
       <h2>The offer is not the finish line.</h2>
       <p class="lede" style="margin-bottom:var(--s5)">The first few months in a new role are the hardest, especially in your first job. You are handed real work with real consequences and you cannot ask the same question five times. So ask us instead.</p>
 
-      <div class="grid g4" style="margin-top:var(--s4)">
+      <div class="grid g4 stagger" style="margin-top:var(--s4)">
         <div class="step"><span class="num">01</span><h3>Real task help</h3><p>Stuck on something you were assigned at work. We walk through it with you until you can do it yourself.</p></div>
         <div class="step"><span class="num">02</span><h3>Reachable when needed</h3><p>Support is arranged around your working hours, because a problem at four in the afternoon cannot wait a week.</p></div>
         <div class="step"><span class="num">03</span><h3>You stay capable</h3><p>We explain the reasoning rather than handing over an answer, so you are genuinely stronger the next time it comes up.</p></div>
@@ -1258,7 +1598,7 @@ summary:focus-visible {
   </section>
 
   <section class="band">
-    <div class="wrap inner">
+    <div class="wrap inner reveal">
       <div>
         <h2>Send us your current resume. We will tell you what is holding it back.</h2>
         <p>A free review with specific, honest feedback. No template reply.</p>
@@ -1272,10 +1612,10 @@ summary:focus-visible {
 
   <section class="hero" style="padding:var(--s7) 0 var(--s6)">
     <div class="wrap">
-      <span class="eyebrow">For companies</span>
-      <h1>The team that teaches the work also <em>does the work</em>.</h1>
-      <p class="lede">Rafter Technologies takes on web development, software delivery and cyber security for businesses. Same people, same standards, applied to your project instead of a classroom.</p>
-      <div class="btnrow">
+      <span class="eyebrow enter">For companies</span>
+      <h1 class="enter">The team that teaches the work also <em>does the work</em>.</h1>
+      <p class="lede enter">Rafter Technologies takes on web development, software delivery and cyber security for businesses. Same people, same standards, applied to your project instead of a classroom.</p>
+      <div class="btnrow enter">
         <a class="btn primary" href="#/contact">Discuss a project</a>
         <a class="btn ghost" href="#security">Security services</a>
       </div>
@@ -1284,11 +1624,11 @@ summary:focus-visible {
 
   <section class="section">
     <div class="wrap">
-      <span class="eyebrow">Services</span>
-      <h2>What we deliver.</h2>
-      <p class="lede" style="margin-bottom:var(--s5)">Scoped properly before we start, so you know what you are getting and what it costs.</p>
+      <span class="eyebrow reveal">Services</span>
+      <h2 class="reveal">What we deliver.</h2>
+      <p class="lede reveal" style="margin-bottom:var(--s5)">Scoped properly before we start, so you know what you are getting and what it costs.</p>
 
-      <div class="grid g3">
+      <div class="grid g3 stagger">
         <article class="card">
           <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <rect x="2.5" y="4" width="19" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M2.5 8.5h19M6 6.2h.01M8.4 6.2h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
@@ -1338,7 +1678,7 @@ summary:focus-visible {
   <section class="section dark" id="security">
     <div class="wrap">
       <div class="split">
-        <div>
+        <div class="reveal from_left">
           <span class="eyebrow">Cyber security</span>
           <h2>Security work that produces decisions, not just a document.</h2>
           <p class="lede">Plenty of reports get delivered and then sit in a folder because nobody could tell what mattered most or what to do first.</p>
@@ -1346,7 +1686,7 @@ summary:focus-visible {
           <div class="btnrow" style="margin-top:var(--s4)"><a class="btn primary" href="#/contact">Request an assessment</a></div>
         </div>
         <div>
-          <ul class="tracks">
+          <ul class="tracks reveal">
             <li><svg class="tick" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Security assessment</strong><br><span>Where you are exposed and how serious each finding really is</span></div></li>
             <li><svg class="tick" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Application security review</strong><br><span>Your web and software products examined before attackers do it for you</span></div></li>
             <li><svg class="tick" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Hardening and remediation</strong><br><span>Practical fixes applied, not just recommended</span></div></li>
@@ -1360,9 +1700,9 @@ summary:focus-visible {
 
   <section class="section paper">
     <div class="wrap">
-      <span class="eyebrow">How we engage</span>
-      <h2>Straightforward, and scoped before anyone commits.</h2>
-      <div class="grid g4" style="margin-top:var(--s5)">
+      <span class="eyebrow reveal">How we engage</span>
+      <h2 class="reveal">Straightforward, and scoped before anyone commits.</h2>
+      <div class="grid g4 stagger" style="margin-top:var(--s5)">
         <div class="step"><span class="num">01</span><h3>Discovery</h3><p>We listen to the problem properly and ask the awkward questions early rather than after the contract.</p></div>
         <div class="step"><span class="num">02</span><h3>Scope and estimate</h3><p>A written scope with timeline and cost. If we think the idea needs changing, we say so before you spend.</p></div>
         <div class="step"><span class="num">03</span><h3>Build and review</h3><p>Work delivered in visible stages so you can see progress and redirect early instead of at the end.</p></div>
@@ -1372,7 +1712,7 @@ summary:focus-visible {
   </section>
 
   <section class="band">
-    <div class="wrap inner">
+    <div class="wrap inner reveal">
       <div>
         <h2>Have a project, or just a problem you cannot place?</h2>
         <p>Describe it in plain language. We will come back with an honest view on fit, timeline and cost.</p>
@@ -1386,9 +1726,9 @@ summary:focus-visible {
 
   <section class="hero" style="padding:var(--s6) 0 var(--s5)">
     <div class="wrap">
-      <span class="eyebrow">Contact</span>
-      <h1>Tell us what you are trying to do.</h1>
-      <p class="lede" style="margin-bottom:0">Whether you are looking for training, a resume that finally gets calls, or a delivery partner for your company, start here. The first conversation costs nothing.</p>
+      <span class="eyebrow enter">Contact</span>
+      <h1 class="enter">Tell us what you are trying to do.</h1>
+      <p class="lede enter" style="margin-bottom:0">Whether you are looking for training, a resume that finally gets calls, or a delivery partner for your company, start here. The first conversation costs nothing.</p>
     </div>
   </section>
 
@@ -1396,7 +1736,7 @@ summary:focus-visible {
     <div class="wrap">
       <div class="split" style="grid-template-columns:1.5fr 1fr">
 
-        <div>
+        <div class="reveal from_left">
           <h2 style="font-size:1.7rem">Send us a message</h2>
           <p class="lede">Fields marked with an asterisk are required.</p>
 
@@ -1478,7 +1818,7 @@ summary:focus-visible {
         </div>
 
         <aside>
-          <div class="panel filled">
+          <div class="panel filled reveal from_right">
             <h3 style="font-size:1.25rem">Reach us directly</h3>
             <ul class="contactlist">
               <li>
@@ -1759,6 +2099,130 @@ summary:focus-visible {
         button.disabled = false;
         button.textContent = original;
       });
+  });
+
+})();
+
+/* Rafter Technologies
+   Motion layer. Scroll reveals, header state, marquee control.
+
+   The gate below is the important part. The resting state of a revealed
+   element is invisible, so the .js_anim class that switches those rules on
+   is only ever added when JavaScript is running AND the visitor has not
+   asked for reduced motion. No JavaScript, or reduced motion on, and the
+   site renders as plain static content with everything visible. */
+
+(function () {
+  'use strict';
+
+  var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
+  var allowed = !(calm && calm.matches);
+
+  if (!allowed) { return; }
+  document.documentElement.classList.add('js_anim');
+
+  /* If the visitor turns reduced motion on while the page is open, drop the
+     whole motion layer rather than leaving half animated elements behind. */
+  if (calm && calm.addEventListener) {
+    calm.addEventListener('change', function (e) {
+      if (e.matches) {
+        document.documentElement.classList.remove('js_anim');
+        document.querySelectorAll('.reveal, .stagger').forEach(function (el) {
+          el.classList.add('seen');
+        });
+      }
+    });
+  }
+
+  /* ----- Scroll reveal ----- */
+
+  function collect(root) {
+    return (root || document).querySelectorAll('.reveal:not(.seen), .stagger:not(.seen)');
+  }
+
+  var observer = null;
+
+  if ('IntersectionObserver' in window) {
+    observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) { return; }
+        entry.target.classList.add('seen');
+        observer.unobserve(entry.target);
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.06 });
+  }
+
+  function watch(root) {
+    var items = collect(root);
+    items.forEach(function (el) {
+      /* Stagger children 40ms apart. The motion guidance caps this well
+         below the point where a long row starts to drag. */
+      if (el.classList.contains('stagger')) {
+        Array.prototype.slice.call(el.children).forEach(function (child, i) {
+          child.style.transitionDelay = Math.min(i * 40, 400) + 'ms';
+        });
+      }
+      if (observer) {
+        observer.observe(el);
+      } else {
+        el.classList.add('seen');
+      }
+    });
+  }
+
+  watch(document);
+
+  /* The preview build swaps pages in and out, so anything revealed inside a
+     newly shown page needs observing again. */
+  window.addEventListener('hashchange', function () {
+    window.setTimeout(function () { watch(document); }, 40);
+  });
+
+  /* ----- Header state on scroll ----- */
+
+  var masthead = document.querySelector('.masthead');
+  if (masthead) {
+    var ticking = false;
+    var onScroll = function () {
+      if (ticking) { return; }
+      ticking = true;
+      window.requestAnimationFrame(function () {
+        masthead.classList.toggle('stuck', window.scrollY > 24);
+        ticking = false;
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+
+  /* ----- Marquee -----
+     Moving content needs a way to stop it. That is a requirement, not a
+     nicety, so the strip gets a real button rather than hover alone. */
+
+  document.querySelectorAll('.marquee').forEach(function (strip) {
+    var track = strip.querySelector('.track');
+    if (!track) { return; }
+
+    /* Duplicate the run once so the loop has something to scroll into. The
+       copy is hidden from assistive tech, which should read the list once. */
+    var copy = track.cloneNode(true);
+    copy.setAttribute('aria-hidden', 'true');
+    Array.prototype.slice.call(copy.children).forEach(function (c) {
+      c.setAttribute('aria-hidden', 'true');
+    });
+    while (copy.firstChild) { track.appendChild(copy.firstChild); }
+
+    var stop = document.createElement('button');
+    stop.type = 'button';
+    stop.className = 'marquee_stop';
+    stop.textContent = 'Pause';
+    stop.setAttribute('aria-pressed', 'false');
+    stop.addEventListener('click', function () {
+      var paused = strip.classList.toggle('paused');
+      stop.textContent = paused ? 'Play' : 'Pause';
+      stop.setAttribute('aria-pressed', String(paused));
+    });
+    strip.appendChild(stop);
   });
 
 })();

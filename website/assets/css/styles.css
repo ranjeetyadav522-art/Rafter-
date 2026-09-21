@@ -742,3 +742,337 @@ summary:focus-visible {
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+
+/* ==========================================================================
+   Motion
+   Everything here is gated behind .js_anim, which the script adds to <html>
+   only when JavaScript runs AND the visitor has not asked for reduced
+   motion. That ordering matters: the resting state of a revealed element is
+   invisible, so if the gate were in the base stylesheet, anyone with
+   JavaScript off or reduced motion on would be left staring at a blank page.
+   Only transform and opacity are animated, so nothing triggers layout.
+   ========================================================================== */
+
+/* ---------- Scroll reveal ---------- */
+
+.js_anim .reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 520ms var(--ease), transform 520ms var(--ease);
+  will-change: opacity, transform;
+}
+
+.js_anim .reveal.seen {
+  opacity: 1;
+  transform: none;
+  will-change: auto;
+}
+
+/* Children stagger in. The delay is set inline by the script, 40ms apart,
+   which the motion guidance caps well below the point where a long row
+   starts to feel slow. */
+.js_anim .stagger > * {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 460ms var(--ease), transform 460ms var(--ease);
+}
+
+.js_anim .stagger.seen > * {
+  opacity: 1;
+  transform: none;
+}
+
+/* Sideways variants for split sections */
+.js_anim .reveal.from_left { transform: translateX(-26px); }
+.js_anim .reveal.from_right { transform: translateX(26px); }
+.js_anim .reveal.from_left.seen,
+.js_anim .reveal.from_right.seen { transform: none; }
+
+/* ---------- Hero entrance ---------- */
+
+.js_anim .hero .enter {
+  opacity: 0;
+  transform: translateY(26px);
+  animation: rise 720ms var(--ease) forwards;
+}
+
+.js_anim .hero .enter:nth-child(1) { animation-delay: 60ms; }
+.js_anim .hero .enter:nth-child(2) { animation-delay: 140ms; }
+.js_anim .hero .enter:nth-child(3) { animation-delay: 220ms; }
+.js_anim .hero .enter:nth-child(4) { animation-delay: 300ms; }
+.js_anim .hero .enter:nth-child(5) { animation-delay: 380ms; }
+.js_anim .hero .enter:nth-child(6) { animation-delay: 460ms; }
+
+@keyframes rise {
+  to { opacity: 1; transform: none; }
+}
+
+/* The angled brand shape drifts very slightly so the hero is never
+   completely static. Small amplitude on purpose: this sits behind text. */
+.js_anim .hero::after {
+  animation: drift 22s ease-in-out infinite alternate;
+}
+
+@keyframes drift {
+  from { transform: rotate(32deg) translate3d(0, 0, 0) scale(1); }
+  to   { transform: rotate(38deg) translate3d(-26px, 22px, 0) scale(1.06); }
+}
+
+/* ---------- Header on scroll ---------- */
+
+.masthead {
+  transition: background 220ms var(--ease), box-shadow 220ms var(--ease);
+}
+
+.masthead.stuck {
+  background: rgba(10, 10, 10, 0.92);
+  backdrop-filter: saturate(140%) blur(10px);
+  box-shadow: 0 1px 0 var(--ink-line), 0 8px 28px rgba(0, 0, 0, 0.35);
+}
+
+.masthead .wrap { transition: min-height 220ms var(--ease); }
+.masthead.stuck .wrap { min-height: 62px; }
+
+/* Nav underline grows from the centre rather than snapping in */
+.nav a:not(.btn) { position: relative; }
+
+.nav a:not(.btn)::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 4px;
+  height: 2px;
+  background: var(--orange);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 220ms var(--ease);
+}
+
+.nav a:not(.btn):hover::after,
+.nav a:not(.btn)[aria-current="page"]::after { transform: scaleX(1); }
+
+.nav a[aria-current="page"] { box-shadow: none; }
+
+/* ---------- Cards ---------- */
+
+.card {
+  transition: border-color var(--speed) var(--ease),
+              transform 320ms var(--ease),
+              background 320ms var(--ease);
+}
+
+.js_anim .card:hover { transform: translateY(-5px); }
+
+/* A thin orange edge wipes across the top of a card on hover. */
+.card { position: relative; overflow: hidden; }
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: var(--orange);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 340ms var(--ease);
+}
+
+.card:hover::before { transform: scaleX(1); }
+
+.card .more svg { transition: transform 240ms var(--ease); }
+.card:hover .more svg { transform: translateX(5px); }
+
+/* ---------- Buttons ---------- */
+
+.btn { position: relative; overflow: hidden; }
+
+.js_anim .btn:hover { transform: translateY(-2px); }
+.js_anim .btn:active { transform: translateY(0); }
+
+.btn { transition: background var(--speed) var(--ease), color var(--speed) var(--ease),
+                   border-color var(--speed) var(--ease), transform 200ms var(--ease); }
+
+/* ---------- Bento grid ---------- */
+
+.bento {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--s3);
+}
+
+.bento .card { border-radius: 6px; }
+.bento .wide { grid-column: span 2; }
+.bento .tall { grid-row: span 2; }
+
+.bento .feature {
+  grid-column: span 2;
+  grid-row: span 2;
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--white);
+  justify-content: space-between;
+}
+
+.bento .feature h3 { color: var(--white); font-size: 1.6rem; }
+.bento .feature p { color: #d4d4d4; font-size: 1.03rem; }
+.bento .feature .icon { color: var(--orange); width: 52px; height: 52px; }
+.bento .feature .more { color: var(--orange); }
+.bento .feature::before { background: var(--orange); }
+.js_anim .bento .feature:hover { transform: translateY(-5px); }
+
+@media (max-width: 1000px) {
+  .bento { grid-template-columns: repeat(2, 1fr); }
+  .bento .feature, .bento .wide { grid-column: span 2; }
+  .bento .feature, .bento .tall { grid-row: auto; }
+}
+
+@media (max-width: 620px) {
+  .bento { grid-template-columns: 1fr; }
+  .bento .feature, .bento .wide { grid-column: auto; }
+}
+
+/* ---------- Marquee ---------- */
+
+.marquee {
+  background: var(--orange);
+  color: var(--ink);
+  overflow: hidden;
+  padding: 15px 0;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+
+.marquee .track {
+  display: flex;
+  gap: var(--s5);
+  width: max-content;
+  align-items: center;
+}
+
+.js_anim .marquee .track { animation: slide 38s linear infinite; }
+
+.marquee:hover .track,
+.marquee:focus-within .track { animation-play-state: paused; }
+
+.marquee span {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s5);
+}
+
+.marquee span::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  background: var(--ink);
+  border-radius: 50%;
+  flex: 0 0 7px;
+}
+
+@keyframes slide {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* Pausing a marquee is a WCAG requirement, not a nicety. */
+.marquee_stop {
+  position: absolute;
+  right: var(--s3);
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--ink);
+  color: var(--white);
+  border: 0;
+  border-radius: 3px;
+  font-family: var(--font-head);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 9px 13px;
+  min-height: 36px;
+  cursor: pointer;
+}
+
+.marquee { position: relative; }
+.marquee.paused .track { animation-play-state: paused !important; }
+
+@media (max-width: 720px) { .marquee_stop { display: none; } }
+
+/* ---------- Step numbers ---------- */
+
+.step { transition: border-top-color 300ms var(--ease); }
+.step:hover { border-top-color: var(--orange); }
+
+.js_anim .step .num {
+  display: inline-block;
+  transition: transform 320ms var(--ease);
+}
+
+.js_anim .step:hover .num { transform: translateY(-4px); }
+
+/* ---------- Track rows ---------- */
+
+.tracks li { transition: background 240ms var(--ease), padding-left 240ms var(--ease); }
+.js_anim .tracks li:hover { background: var(--paper); padding-left: 12px; }
+.section.dark .tracks li:hover { background: var(--ink-soft); }
+
+.tracks .tick { transition: transform 260ms var(--ease); }
+.js_anim .tracks li:hover .tick { transform: scale(1.22); }
+
+/* ---------- Panels and band ---------- */
+
+.panel { transition: transform 320ms var(--ease), border-color 320ms var(--ease); }
+.js_anim .panel:hover { transform: translateY(-4px); }
+
+.band { position: relative; overflow: hidden; }
+
+.band::after {
+  content: "";
+  position: absolute;
+  left: -120px;
+  bottom: -160px;
+  width: 420px;
+  height: 420px;
+  border: 40px solid rgba(10, 10, 10, 0.07);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.js_anim .band::after { animation: drift 26s ease-in-out infinite alternate; }
+
+/* ---------- Routed page transition, preview only ---------- */
+
+.js_anim .routed:not([hidden]) {
+  animation: pagein 380ms var(--ease);
+}
+
+@keyframes pagein {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ---------- Reduced motion, belt and braces ----------
+   The script already withholds .js_anim, so these rules should never be
+   needed. They are here in case the class is ever added by other means. */
+
+@media (prefers-reduced-motion: reduce) {
+  .js_anim .reveal,
+  .js_anim .stagger > *,
+  .js_anim .hero .enter {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+  .js_anim .marquee .track,
+  .js_anim .hero::after,
+  .js_anim .band::after { animation: none !important; }
+}
