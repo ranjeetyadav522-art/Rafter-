@@ -31,9 +31,11 @@
   --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
           "Inter", "Helvetica Neue", Arial, sans-serif;
 
-  --wrap: 1080px;
+  --wrap: 1120px;
+  --header-h: 76px;
   --radius: 28px;
   --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -137,58 +139,56 @@ summary:focus-visible {
 .muted { color: var(--grey); }
 .section.black .muted { color: var(--grey-on-dark); }
 
-/* ---------- Header ---------- */
+/* ---------- Header ----------
+   The blur lives on a pseudo element. A backdrop filter on the header itself
+   would make it the containing block for the fixed mobile menu, which then
+   collapses to the height of the header instead of filling the screen. */
 
 .masthead {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(255, 255, 255, 0.82);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  backdrop-filter: saturate(180%) blur(20px);
   border-bottom: 1px solid transparent;
   transition: border-color 240ms var(--ease);
 }
 
+.masthead::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: rgba(255, 255, 255, 0.86);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+}
+
 .masthead.stuck { border-bottom-color: rgba(0, 0, 0, 0.1); }
 
-.masthead .wrap {
+.masthead .bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 52px;
+  min-height: var(--header-h);
   gap: 24px;
 }
 
-.brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 600;
-  font-size: 1.05rem;
-  letter-spacing: -0.02em;
-  text-decoration: none;
-  color: var(--ink);
-}
+.brand { display: inline-flex; align-items: center; text-decoration: none; }
+.brand img { display: block; height: 54px; width: auto; }
 
-.brand .mark { width: 22px; height: 22px; flex: 0 0 22px; }
-
-.nav { display: flex; align-items: center; gap: 30px; }
+.nav { display: flex; align-items: center; gap: 34px; }
 
 .nav a {
-  font-size: 0.82rem;
-  letter-spacing: -0.005em;
+  font-size: 0.88rem;
   color: var(--ink);
-  opacity: 0.8;
+  opacity: 0.78;
   text-decoration: none;
-  padding: 8px 0;
+  padding: 10px 0;
   transition: opacity 200ms var(--ease);
   white-space: nowrap;
 }
 
 .nav a:hover,
 .nav a[aria-current="page"] { opacity: 1; }
-
 .nav a[aria-current="page"] { font-weight: 600; }
 
 .nav a.pill {
@@ -196,7 +196,7 @@ summary:focus-visible {
   font-weight: 500;
   background: var(--ink);
   color: var(--white);
-  padding: 7px 15px;
+  padding: 9px 20px;
   border-radius: 980px;
   transition: background 200ms var(--ease);
 }
@@ -221,12 +221,16 @@ summary:focus-visible {
   .navtoggle { display: inline-flex; }
   .nav {
     position: fixed;
-    inset: 52px 0 0 0;
+    top: var(--header-h);
+    left: 0;
+    right: 0;
+    height: calc(100dvh - var(--header-h));
+    z-index: 2;
     background: var(--white);
     flex-direction: column;
     align-items: stretch;
     gap: 0;
-    padding: 20px 24px 40px;
+    padding: 12px 24px 40px;
     overflow-y: auto;
   }
   .nav[hidden] { display: none; }
@@ -235,7 +239,7 @@ summary:focus-visible {
     font-weight: 600;
     letter-spacing: -0.02em;
     opacity: 1;
-    padding: 14px 0;
+    padding: 16px 0;
     border-bottom: 1px solid var(--hairline);
   }
   .nav a.pill {
@@ -246,6 +250,39 @@ summary:focus-visible {
     padding: 15px;
   }
 }
+
+/* Section navigation, shown on the Career Services pages */
+
+.localnav { border-top: 1px solid rgba(0, 0, 0, 0.08); }
+.localnav[hidden] { display: none; }
+
+.localnav .wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 48px;
+}
+
+.localnav .title { font-size: 1rem; font-weight: 600; letter-spacing: -0.02em; white-space: nowrap; }
+
+.localnav .links { display: flex; gap: 26px; overflow-x: auto; scrollbar-width: none; }
+.localnav .links::-webkit-scrollbar { display: none; }
+
+.localnav a {
+  font-size: 0.8rem;
+  color: var(--ink);
+  opacity: 0.74;
+  text-decoration: none;
+  white-space: nowrap;
+  padding: 14px 0;
+}
+
+.localnav a:hover,
+.localnav a[aria-current="page"] { opacity: 1; }
+.localnav a[aria-current="page"] { font-weight: 600; }
+
+@media (max-width: 560px) { .localnav .title { display: none; } }
 
 /* ---------- Buttons and links ---------- */
 
@@ -314,40 +351,79 @@ summary:focus-visible {
 /* ---------- Hero ---------- */
 
 .hero {
-  padding: 120px 0 110px;
+  position: relative;
+  padding: 150px 0 130px;
   text-align: center;
+  overflow: clip;
 }
 
-.hero.dark { background: var(--black); color: var(--mist); }
+.hero .wrap { position: relative; z-index: 1; max-width: 960px; }
 
-.hero .wrap { max-width: 900px; }
-
+.hero h1 { font-size: clamp(2.8rem, 8.4vw, 5.75rem); }
 .hero h1 em { font-style: normal; color: var(--accent-text); }
 .hero.dark h1 em { color: var(--accent); }
 
+/* Each headline line sits in its own mask so it can rise into place. */
+.ln { display: block; overflow: hidden; padding-bottom: 0.12em; margin-bottom: -0.12em; }
+.ln > span { display: block; }
+
 .hero .sub {
   max-width: 640px;
-  margin: 26px auto 0;
+  margin: 28px auto 0;
   font-size: clamp(1.2rem, 2.3vw, 1.5rem);
 }
 
-.hero.dark .sub { color: var(--grey-on-dark); }
-
-.hero .actions { margin-top: 38px; justify-content: center; }
+.hero .actions { margin-top: 40px; justify-content: center; }
 
 .hero .fields {
-  margin: 84px auto 0;
+  margin: 92px auto 0;
   max-width: 700px;
   font-size: 0.86rem;
   line-height: 1.9;
-  color: var(--grey-on-dark);
 }
 
-.hero.small { padding: 96px 0 72px; }
+.hero.dark { background: var(--black); color: var(--mist); }
+.hero.dark .sub, .hero.dark .fields { color: var(--grey-on-dark); }
+
+.hero.soft { background: var(--mist); }
+.hero.soft .fields { color: var(--grey); }
+
+/* A fine dot grid and one soft light that follows the pointer. The only
+   place the accent is used as a wash, and it is kept faint. */
+.hero.dark::before,
+.hero.dark::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hero.dark::before {
+  background: radial-gradient(620px circle at var(--mx, 50%) var(--my, 0%),
+              rgba(255, 106, 0, 0.2), transparent 62%);
+}
+
+.hero.dark::after {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1px);
+  background-size: 28px 28px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 62% at 50% 38%, #000 18%, transparent 76%);
+  mask-image: radial-gradient(ellipse 70% 62% at 50% 38%, #000 18%, transparent 76%);
+}
+
+/* As the page scrolls the hero eases back into a rounded card. */
+.hero.shrink {
+  transform: scale(calc(1 - var(--p, 0) * 0.07));
+  border-radius: calc(var(--p, 0) * 40px);
+  transform-origin: 50% 100%;
+}
+
+.hero.shrink .wrap { opacity: calc(1 - var(--p, 0) * 1.15); }
+
+.hero.small { padding: 104px 0 76px; }
 
 @media (max-width: 720px) {
-  .hero { padding: 84px 0 76px; }
-  .hero .fields { margin-top: 60px; }
+  .hero { padding: 96px 0 84px; }
+  .hero .fields { margin-top: 64px; }
   .hero.small { padding: 68px 0 48px; }
 }
 
@@ -659,7 +735,8 @@ summary:focus-visible {
   padding-bottom: 36px;
 }
 
-.foot .brand { margin-bottom: 12px; }
+.foot .brand { margin-bottom: 14px; }
+.foot .brand img { height: 64px; }
 .foot .about p { max-width: 34ch; }
 
 .foot h4 {
@@ -679,6 +756,154 @@ summary:focus-visible {
 @media (max-width: 820px) { .foot .cols { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 480px) { .foot .cols { grid-template-columns: 1fr; } }
 
+/* ---------- Statement ---------- */
+
+.statement {
+  max-width: 940px;
+  font-size: clamp(1.75rem, 4.2vw, 3.1rem);
+  line-height: 1.16;
+  letter-spacing: -0.028em;
+  font-weight: 600;
+  text-wrap: balance;
+}
+
+/* ---------- Stacked service cards ---------- */
+
+.stack { display: grid; gap: 24px; }
+
+.stack .card {
+  display: grid;
+  grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+  gap: 56px;
+  align-items: end;
+  min-height: 440px;
+  padding: 56px;
+  border-radius: var(--radius);
+  background: var(--mist);
+  transform-origin: 50% 0;
+}
+
+.stack .card.dark { background: var(--black); color: var(--mist); }
+.stack .card.line { background: var(--white); box-shadow: inset 0 0 0 1px var(--hairline); }
+
+.stack .label { display: block; font-size: 0.86rem; font-weight: 600; color: var(--grey); margin-bottom: 14px; }
+.stack .card.dark .label { color: var(--grey-on-dark); }
+
+.stack h3 { font-size: clamp(1.9rem, 3.6vw, 2.75rem); line-height: 1.06; letter-spacing: -0.03em; max-width: 14ch; }
+.stack p { margin-top: 16px; color: var(--grey); max-width: 44ch; }
+.stack .card.dark p { color: var(--grey-on-dark); }
+
+.stack ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--hairline); }
+.stack li { padding: 15px 0; border-bottom: 1px solid var(--hairline); font-size: 1.05rem; }
+.stack .card.dark ul, .stack .card.dark li { border-color: var(--hairline-dark); }
+
+/* Sticky stacking only where a card comfortably fits on screen. */
+@media (min-width: 900px) and (min-height: 700px) {
+  .stack .card { position: sticky; top: calc(var(--header-h) + 28px + var(--i, 0) * 20px); }
+}
+
+@media (max-width: 899px) {
+  .stack .card { grid-template-columns: 1fr; gap: 32px; min-height: 0; padding: 40px 28px; border-radius: 22px; }
+}
+
+/* ---------- Scroll band ---------- */
+
+.band { overflow: clip; padding: 24px 0 8px; }
+
+.band .line {
+  display: flex;
+  gap: 0.42em;
+  width: max-content;
+  white-space: nowrap;
+  font-size: clamp(3.4rem, 11vw, 9rem);
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+  color: var(--hairline);
+  transform: translate3d(calc(var(--p, 0) * -32%), 0, 0);
+}
+
+.band .solid { color: var(--ink); }
+
+@supports (-webkit-text-stroke: 1px black) {
+  .band .line span:not(.solid) { color: transparent; -webkit-text-stroke: 1.5px #c7c7cc; }
+}
+
+/* ---------- Process ---------- */
+
+.steps { position: relative; max-width: 760px; padding-left: 48px; }
+
+.steps::before,
+.steps .fill {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 10px;
+  bottom: 10px;
+  width: 2px;
+}
+
+.steps::before { background: var(--hairline); }
+
+.steps .fill {
+  background: var(--accent);
+  transform-origin: 50% 0;
+  transform: scaleY(var(--p, 0));
+}
+
+.steps ol { list-style: none; margin: 0; padding: 0; }
+.steps li { position: relative; padding-bottom: 52px; }
+.steps li:last-child { padding-bottom: 0; }
+
+.steps li::before {
+  content: "";
+  position: absolute;
+  left: -48px;
+  top: 5px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--mist);
+  box-shadow: inset 0 0 0 2px #c7c7cc;
+  transition: box-shadow 300ms var(--ease);
+}
+
+.steps li.on::before { box-shadow: inset 0 0 0 8px var(--accent); }
+
+.steps h3 { font-size: 1.4rem; margin-bottom: 8px; }
+.steps p { color: var(--grey); max-width: 52ch; }
+
+/* ---------- Pointer light on dark surfaces ---------- */
+
+.glow { position: relative; overflow: hidden; }
+
+.glow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 400ms var(--ease);
+  background: radial-gradient(460px circle at var(--mx, 50%) var(--my, 50%),
+              rgba(255, 255, 255, 0.11), transparent 60%);
+}
+
+.glow:hover::before { opacity: 1; }
+
+/* ---------- Reading progress ---------- */
+
+.progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 150;
+  background: var(--accent);
+  transform-origin: 0 50%;
+  transform: scaleX(var(--p, 0));
+}
+
 /* ---------- Preview build only ---------- */
 
 .previewbar {
@@ -693,40 +918,49 @@ summary:focus-visible {
 
 /* ==========================================================================
    Motion
-   Deliberately quiet: content settles into place once, and nothing loops.
-   All of it sits behind .js_anim, which the script adds only when JavaScript
-   runs and the visitor has not asked for reduced motion. The resting state
-   of a revealed element is invisible, so without that gate a visitor with
-   scripts off or reduced motion on would get a blank page.
+   Three kinds, each used once per view at most:
+     settle   content rises into place the first time it is seen
+     scrub    a few elements track the scroll position directly
+     pointer  a soft light follows the cursor on dark surfaces
+   Every resting state that hides content sits behind .js_anim, which the
+   script adds only when JavaScript runs and the visitor has not asked for
+   reduced motion. Without that gate, scripts off or reduced motion on would
+   leave a blank page.
    ========================================================================== */
 
 .js_anim .reveal,
 .js_anim .stagger > * {
   opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 700ms var(--ease), transform 700ms var(--ease);
+  transform: translateY(28px);
+  transition: opacity 900ms var(--out), transform 900ms var(--out);
 }
 
 .js_anim .reveal.seen,
-.js_anim .stagger.seen > * {
-  opacity: 1;
-  transform: none;
+.js_anim .stagger.seen > * { opacity: 1; transform: none; }
+
+.js_anim .hero .ln > span {
+  transform: translateY(108%);
+  animation: lineup 1000ms var(--out) forwards;
 }
+
+.js_anim .hero .ln:nth-child(2) > span { animation-delay: 110ms; }
 
 .js_anim .hero .enter {
   opacity: 0;
-  transform: translateY(16px);
-  animation: settle 900ms var(--ease) forwards;
+  transform: translateY(18px);
+  animation: settle 900ms var(--out) 260ms forwards;
 }
 
-.js_anim .hero .enter:nth-child(2) { animation-delay: 90ms; }
-.js_anim .hero .enter:nth-child(3) { animation-delay: 180ms; }
-.js_anim .hero .enter:nth-child(4) { animation-delay: 320ms; }
+.js_anim .hero .enter + .enter { animation-delay: 360ms; }
+.js_anim .hero .enter + .enter + .enter { animation-delay: 520ms; }
 
+@keyframes lineup { to { transform: none; } }
 @keyframes settle { to { opacity: 1; transform: none; } }
 
-.js_anim .routed:not([hidden]) { animation: pagein 500ms var(--ease); }
+.js_anim .statement .w { opacity: 0.16; transition: opacity 320ms var(--ease); }
+.js_anim .statement .w.on { opacity: 1; }
 
+.js_anim .routed:not([hidden]) { animation: pagein 500ms var(--ease); }
 @keyframes pagein { from { opacity: 0; } to { opacity: 1; } }
 
 @media (prefers-reduced-motion: reduce) {
@@ -735,7 +969,7 @@ summary:focus-visible {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
-  .js_anim .reveal,
-  .js_anim .stagger > *,
-  .js_anim .hero .enter { opacity: 1 !important; transform: none !important; }
+  .hero.shrink { transform: none; border-radius: 0; }
+  .hero.shrink .wrap { opacity: 1; }
+  .band .line { transform: none; }
 }

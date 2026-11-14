@@ -1,28 +1,25 @@
 #!/usr/bin/env python3
 """Build a single file interactive preview of the Rafter Technologies site.
 
-The live site is five separate pages, which is correct for hosting and for
-search engines. Some preview sandboxes will not navigate between separate
-html files, so this bundles everything into one self contained file with
-client side routing: all five pages, the stylesheet and the script inlined,
-nothing loaded from disk except the web fonts.
+The live site is separate pages, which is right for hosting and for search
+engines. Some preview sandboxes will not navigate between separate html
+files, so this bundles everything into one self contained file with client
+side routing: every page, the stylesheet, the script and the logo inlined.
+Only the web font is loaded from outside.
 
 Output: preview.html, in this same folder. Open it directly in a browser.
 
 Usage:  python3 build_preview.py
 """
 
+import base64
+import json
 import os
 import re
 import sys
 
-PAGES = [
-    ("index", "Home"),
-    ("training", "Training"),
-    ("resume", "Resume and Support"),
-    ("services", "IT Services"),
-    ("contact", "Talk to us"),
-]
+PAGES = ["index", "career", "training", "resume", "contact"]
+CAREER = ["career", "training", "resume"]
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
@@ -32,133 +29,95 @@ def read(*parts):
         return handle.read()
 
 
-def main_of(html):
-    """Pull the <main> block out of a page."""
-    match = re.search(r"<main id=\"main\">(.*?)</main>", html, re.S)
+def block(html, pattern, what):
+    match = re.search(pattern, html, re.S)
     if not match:
-        raise SystemExit("No main block found in one of the pages.")
+        raise SystemExit("Could not find the %s block in a page." % what)
     return match.group(1)
-
-
-def footer_of(html):
-    match = re.search(r"<footer class=\"foot\">(.*?)</footer>", html, re.S)
-    return match.group(1) if match else ""
 
 
 def rewrite_links(fragment):
     """Point page links at the router instead of at files on disk."""
-    names = "|".join(name for name, _ in PAGES)
-
-    # page.html#anchor  ->  #/page/anchor
-    fragment = re.sub(
-        r'href="(' + names + r')\.html#([A-Za-z0-9_-]+)"',
-        r'href="#/\1/\2"',
-        fragment,
-    )
-    # page.html  ->  #/page
-    fragment = re.sub(
-        r'href="(' + names + r')\.html"',
-        r'href="#/\1"',
-        fragment,
-    )
+    names = "|".join(PAGES)
+    fragment = re.sub(r'href="(' + names + r')\.html#([A-Za-z0-9_]+)"',
+                      r'href="#/\1/\2"', fragment)
+    fragment = re.sub(r'href="(' + names + r')\.html"', r'href="#/\1"', fragment)
     return fragment
 
 
 def build():
     css = read("assets", "css", "styles.css")
     js = read("assets", "js", "main.js")
+    sources = {name: read(name + ".html") for name in PAGES}
 
-    sources = {name: read(name + ".html") for name, _ in PAGES}
+    with open(os.path.join(HERE, "assets", "img", "logo.png"), "rb") as handle:
+        logo = "data:image/png;base64," + base64.b64encode(handle.read()).decode("ascii")
+
+    # The header comes from a Career Services page, because that one carries
+    # the section navigation as well. The router shows it only where it applies.
+    header = block(sources["career"], r'(<header class="masthead">.*?</header>)', "header")
+    header = header.replace(' aria-current="page"', "")
+    header = rewrite_links(header)
 
     sections = []
-    for name, _ in PAGES:
-        body = rewrite_links(main_of(sources[name]))
+    for name in PAGES:
+        body = rewrite_links(block(sources[name], r'<main id="main">(.*?)</main>', "main"))
         # links to a section of the same page go through the router too
         body = re.sub(r'href="#([A-Za-z0-9_]+)"', 'href="#/%s/\\1"' % name, body)
         hidden = "" if name == "index" else " hidden"
-        sections.append(
-            '<div class="routed" id="page_{0}" role="region" '
-            'aria-label="{1}"{2}>{3}</div>'.format(
-                name, dict(PAGES)[name], hidden, body
-            )
-        )
+        sections.append('<div class="routed" id="page_%s"%s>%s</div>' % (name, hidden, body))
 
-    nav = "\n      ".join(
-        '<a href="#/{0}" data_route="{0}"{1}>{2}</a>'.format(
-            name,
-            ' class="pill"' if name == "contact" else "",
-            "Contact" if name == "contact" else label,
-        )
-        for name, label in PAGES
-        if name != "index"
-    )
+    footer = rewrite_links(block(sources["index"], r'(<footer class="foot">.*?</footer>)', "footer"))
 
-    footer = rewrite_links(footer_of(sources["index"]))
-
-    brand_mark = (
-        '<svg class="mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">'
-        '<path d="M2 27 16 5l14 22" stroke="#ff6a00" stroke-width="3.6" '
-        'stroke-linecap="round" stroke-linejoin="round"/>'
-        '<path d="M8.4 27 16 15l7.6 12" stroke="#1d1d1f" stroke-width="3.6" '
-        'stroke-linecap="round" stroke-linejoin="round"/></svg>'
-    )
+    titles = {name: block(sources[name], r"<title>(.*?)</title>", "title") for name in PAGES}
 
     router = """
 (function () {
   'use strict';
   var pages = %s;
+  var career = %s;
+  var titles = %s;
 
   function show(name, anchor) {
     if (pages.indexOf(name) === -1) { name = 'index'; }
+    var inCareer = career.indexOf(name) !== -1;
 
     pages.forEach(function (p) {
-      var el = document.getElementById('page_' + p);
-      if (el) { el.hidden = (p !== name); }
+      document.getElementById('page_' + p).hidden = (p !== name);
     });
 
-    document.querySelectorAll('[data_route]').forEach(function (a) {
-      if (a.getAttribute('data_route') === name) {
-        a.setAttribute('aria-current', 'page');
-      } else {
-        a.removeAttribute('aria-current');
-      }
+    var local = document.querySelector('.localnav');
+    if (local) { local.hidden = !inCareer; }
+
+    document.querySelectorAll('.masthead a[href^="#/"]').forEach(function (a) {
+      var target = a.getAttribute('href').slice(2);
+      var on = a.closest('.localnav')
+        ? target === name
+        : (target === name || (target === 'career' && inCareer));
+      if (a.classList.contains('brand')) { on = false; }
+      if (on) { a.setAttribute('aria-current', 'page'); } else { a.removeAttribute('aria-current'); }
     });
 
-    var titles = %s;
     document.title = titles[name] || 'Rafter Technologies';
 
-    if (anchor) {
-      var target = document.getElementById(anchor);
-      if (target) {
-        target.scrollIntoView({ block: 'start' });
-        return;
-      }
-    }
-    window.scrollTo(0, 0);
+    var target = anchor ? document.getElementById(anchor) : null;
+    if (target) { target.scrollIntoView({ block: 'start' }); } else { window.scrollTo(0, 0); }
   }
 
   function route() {
+    /* A plain fragment such as the skip link is not a route. */
     if (location.hash && location.hash.indexOf('#/') !== 0) { return; }
-    var raw = (location.hash || '#/index').replace(/^#\\//, '');
-    var bits = raw.split('/');
+    var bits = (location.hash || '#/index').slice(2).split('/');
     show(bits[0] || 'index', bits[1]);
   }
 
   window.addEventListener('hashchange', route);
   route();
 })();
-""" % (
-        repr([name for name, _ in PAGES]).replace("'", '"'),
-        repr({name: re.search(r"<title>(.*?)</title>", sources[name], re.S).group(1)
-              for name, _ in PAGES}).replace("'", '"'),
-    )
+""" % (json.dumps(PAGES), json.dumps(CAREER), json.dumps(titles))
 
-    banner = (
-        '<div class="previewbar">Single file preview of the five page site. '
-        'The contact form is live and sends a real message.</div>'
-    )
-
-    extra_css = ""
+    banner = ('<div class="previewbar">Single file preview of the site. '
+              'The contact form is live and sends a real message.</div>')
 
     html = """<!DOCTYPE html>
 <html lang="en">
@@ -168,7 +127,6 @@ def build():
 <title>Rafter Technologies</title>
 <style>
 %s
-%s
 </style>
 </head>
 <body>
@@ -176,29 +134,13 @@ def build():
 <a class="skiplink" href="#main">Skip to main content</a>
 %s
 
-<header class="masthead">
-  <div class="wrap">
-    <a class="brand" href="#/index">
-      %s
-      <span>Rafter</span>
-    </a>
-    <button class="navtoggle" type="button" aria-expanded="false" aria-controls="sitenav">
-      <span class="visually_hidden">Open menu</span>
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 8h16M4 16h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-    </button>
-    <nav class="nav" id="sitenav" aria-label="Main">
-      %s
-    </nav>
-  </div>
-</header>
+%s
 
 <main id="main">
 %s
 </main>
 
-<footer class="foot">
 %s
-</footer>
 
 <script>
 %s
@@ -208,16 +150,16 @@ def build():
 </script>
 </body>
 </html>
-""" % (css, extra_css, banner, brand_mark, nav,
-       "\n".join(sections), footer, js, router)
+""" % (css, banner, header, "\n".join(sections), footer, router, js)
+
+    html = html.replace("assets/img/logo.png", logo)
 
     out = os.path.join(HERE, "preview.html")
     with open(out, "w", encoding="utf-8") as handle:
         handle.write(html)
 
-    size = os.path.getsize(out)
     print("Wrote preview.html ({:,} bytes) with {} pages inlined.".format(
-        size, len(PAGES)))
+        os.path.getsize(out), len(PAGES)))
     return 0
 
 

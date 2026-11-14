@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Contact | Rafter Technologies</title>
-<meta name="description" content="Talk to Rafter Technologies about job oriented training, resume writing, job support or IT services for your company.">
+<meta name="description" content="Talk to Rafter Technologies about a project for your company, or about training, resume writing and job support.">
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="assets/css/styles.css">
@@ -14,20 +15,17 @@
 <a class="skiplink" href="#main">Skip to main content</a>
 
 <header class="masthead">
-  <div class="wrap">
-    <a class="brand" href="index.html">
-      <svg class="mark" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M2 27 16 5l14 22" stroke="#ff6a00" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.4 27 16 15l7.6 12" stroke="#1d1d1f" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <span>Rafter</span>
-    </a>
+  <div class="wrap bar">
+    <a class="brand" href="index.html"><img src="assets/img/logo.png" alt="Rafter Technologies" width="339" height="200"></a>
     <button class="navtoggle" type="button" aria-expanded="false" aria-controls="sitenav">
       <span class="visually_hidden">Open menu</span>
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 8h16M4 16h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
     </button>
     <nav class="nav" id="sitenav" aria-label="Main">
-      <a href="training.html">Training</a>
-      <a href="resume.html">Resume and Support</a>
-      <a href="services.html">IT Services</a>
-      <a href="contact.html" class="pill" aria-current="page">Contact</a>
+      <a href="index.html">IT Services</a>
+      <a href="career.html">Career Services</a>
+      <a href="contact.html" aria-current="page">Contact</a>
+      <a class="pill" href="https://sites.google.com/view/rafter-technologies-outsource/full-page-embed?hl=en-IN" target="_blank" rel="noopener">Login<span class="visually_hidden"> (opens in a new tab)</span></a>
     </nav>
   </div>
 </header>
@@ -36,8 +34,8 @@
 
   <section class="hero small">
     <div class="wrap">
-      <h1 class="enter">Talk to us.</h1>
-      <p class="sub enter">Training, resume writing, job support or a project for your company. Tell us what you need.</p>
+      <h1><span class="ln"><span>Talk to us.</span></span></h1>
+      <p class="sub enter">A project for your company, or training, resume writing and job support. Tell us what you need.</p>
     </div>
   </section>
 
@@ -90,26 +88,26 @@
               <label for="topic">What do you need <span class="req" aria-hidden="true">*</span></label>
               <select id="topic" name="topic" required aria-describedby="topicerror">
                 <option value="">Please choose one</option>
+                <option value="itservices">IT services for my company</option>
                 <option value="training">Training for a job</option>
                 <option value="resume">Resume writing</option>
                 <option value="interview">Interview preparation</option>
                 <option value="support">Job support</option>
-                <option value="itservices">IT services for my company</option>
                 <option value="other">Something else</option>
               </select>
               <span class="error" id="topicerror"></span>
             </div>
 
             <div class="field full">
-              <label for="domain">Your field or target role</label>
-              <input type="text" id="domain" name="domain" aria-describedby="domainhint" placeholder="Mechanical design, cyber security, web development">
+              <label for="domain">Company, field or target role</label>
+              <input type="text" id="domain" name="domain" aria-describedby="domainhint" placeholder="Your company, or a role such as mechanical design">
               <span class="hint" id="domainhint">Optional</span>
             </div>
 
             <div class="field full">
               <label for="message">Message <span class="req" aria-hidden="true">*</span></label>
               <textarea id="message" name="message" required aria-describedby="messagehint messageerror"></textarea>
-              <span class="hint" id="messagehint">Your background, where you are stuck, or what your company needs built.</span>
+              <span class="hint" id="messagehint">What you want built or secured, or your background and where you are stuck.</span>
               <span class="error" id="messageerror"></span>
             </div>
 
@@ -143,34 +141,32 @@
   <div class="wrap">
     <div class="cols">
       <div class="about">
-        <a class="brand" href="index.html">
-          <svg class="mark" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M2 27 16 5l14 22" stroke="#ff6a00" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.4 27 16 15l7.6 12" stroke="#1d1d1f" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span>Rafter</span>
-        </a>
-        <p>Job oriented training, resume writing, job support and IT services.</p>
+        <a class="brand" href="index.html"><img src="assets/img/logo.png" alt="Rafter Technologies" width="339" height="200"></a>
+        <p>IT services for companies. Career services for job seekers.</p>
       </div>
       <div>
-        <h4>Training</h4>
+        <h4>IT Services</h4>
         <ul>
-          <li><a href="training.html">All tracks</a></li>
-          <li><a href="training.html#it">IT tracks</a></li>
-          <li><a href="training.html#core">Engineering tracks</a></li>
-          <li><a href="training.html#method">How it works</a></li>
+          <li><a href="index.html#services">Web development</a></li>
+          <li><a href="index.html#services">Software development</a></li>
+          <li><a href="index.html#services">Cyber security</a></li>
+          <li><a href="index.html#process">How we work</a></li>
         </ul>
       </div>
       <div>
-        <h4>Career</h4>
+        <h4>Career Services</h4>
         <ul>
+          <li><a href="career.html">Overview</a></li>
+          <li><a href="training.html">Training</a></li>
           <li><a href="resume.html">Resume writing</a></li>
-          <li><a href="resume.html#interview">Interview preparation</a></li>
           <li><a href="resume.html#support">Job support</a></li>
         </ul>
       </div>
       <div>
         <h4>Company</h4>
         <ul>
-          <li><a href="services.html">IT services</a></li>
           <li><a href="contact.html">Contact</a></li>
+          <li><a href="https://sites.google.com/view/rafter-technologies-outsource/full-page-embed?hl=en-IN" target="_blank" rel="noopener">Login</a></li>
           <li><a href="mailto:support@raftertechnologies.com">support@raftertechnologies.com</a></li>
           <li><a href="tel:+918052839537">+91 80528 39537</a></li>
         </ul>

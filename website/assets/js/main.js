@@ -201,84 +201,201 @@
 })();
 
 /* Rafter Technologies
-   Motion layer. Content settles into place once as it scrolls into view,
-   and the header gains a hairline once the page has moved. Nothing loops.
+   Motion layer.
 
-   The gate below is the important part. The resting state of a revealed
-   element is invisible, so the .js_anim class that switches those rules on
-   is only added when JavaScript is running AND the visitor has not asked
-   for reduced motion. Otherwise the site renders as plain static content
-   with everything visible. */
+   settle   content rises into place the first time it is seen
+   scrub    the hero, the statement, the service cards, the band and the
+            process line track the scroll position directly
+   pointer  a soft light follows the cursor on dark surfaces
+
+   The gate below matters. Several resting states hide content, so the
+   .js_anim class that switches them on is added only when JavaScript runs
+   AND the visitor has not asked for reduced motion. Otherwise the site is
+   plain static content with everything visible. */
 
 (function () {
   'use strict';
 
-  /* ----- Header hairline on scroll ----- */
-
+  var root = document.documentElement;
   var masthead = document.querySelector('.masthead');
-  if (masthead) {
-    var ticking = false;
-    var onScroll = function () {
-      if (ticking) { return; }
-      ticking = true;
-      window.requestAnimationFrame(function () {
-        masthead.classList.toggle('stuck', window.scrollY > 8);
-        ticking = false;
-      });
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-  }
 
-  /* ----- Reveals ----- */
+  function clamp(v) { return v < 0 ? 0 : (v > 1 ? 1 : v); }
+  function shown(el) { return el.offsetParent !== null; }
+  function each(sel, fn) { Array.prototype.forEach.call(document.querySelectorAll(sel), fn); }
+
+  /* The header hairline is not motion, so it runs for everyone. */
+  function hairline() {
+    if (masthead) { masthead.classList.toggle('stuck', window.scrollY > 8); }
+  }
 
   var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
-  if (calm && calm.matches) { return; }
+  if (calm && calm.matches) {
+    window.addEventListener('scroll', hairline, { passive: true });
+    hairline();
+    return;
+  }
 
-  var root = document.documentElement;
   root.classList.add('js_anim');
 
+  /* ----- Settle: reveal once on first sight ----- */
+
+  var observer = null;
+
   function showAll() {
-    document.querySelectorAll('.reveal, .stagger').forEach(function (el) {
-      el.classList.add('seen');
-    });
+    each('.reveal, .stagger', function (el) { el.classList.add('seen'); });
   }
 
-  /* If reduced motion is switched on while the page is open, drop the whole
-     layer and show everything. */
-  if (calm && calm.addEventListener) {
-    calm.addEventListener('change', function (e) {
-      if (e.matches) { root.classList.remove('js_anim'); showAll(); }
-    });
+  if ('IntersectionObserver' in window) {
+    observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) { return; }
+        entry.target.classList.add('seen');
+        observer.unobserve(entry.target);
+      });
+    }, { rootMargin: '0px 0px -6% 0px', threshold: 0.05 });
   }
-
-  if (!('IntersectionObserver' in window)) { showAll(); return; }
-
-  var observer = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      if (!entry.isIntersecting) { return; }
-      entry.target.classList.add('seen');
-      observer.unobserve(entry.target);
-    });
-  }, { rootMargin: '0px 0px -6% 0px', threshold: 0.05 });
 
   function watch() {
-    document.querySelectorAll('.reveal:not(.seen), .stagger:not(.seen)').forEach(function (el) {
+    if (!observer) { showAll(); return; }
+    each('.reveal:not(.seen), .stagger:not(.seen)', function (el) {
       if (el.classList.contains('stagger')) {
-        Array.prototype.slice.call(el.children).forEach(function (child, i) {
-          child.style.transitionDelay = Math.min(i * 70, 350) + 'ms';
+        Array.prototype.forEach.call(el.children, function (child, i) {
+          child.style.transitionDelay = Math.min(i * 80, 400) + 'ms';
         });
       }
       observer.observe(el);
     });
   }
 
-  watch();
+  /* ----- Scrub: prepare the pieces ----- */
+
+  /* Split each statement into words once. The text and its spacing are left
+     intact, so it still reads as one paragraph to assistive technology. */
+  each('.statement[data_words]', function (el) {
+    var words = el.textContent.trim().split(/\s+/);
+    el.textContent = '';
+    words.forEach(function (word, i) {
+      var span = document.createElement('span');
+      span.className = 'w';
+      span.textContent = word;
+      el.appendChild(span);
+      if (i < words.length - 1) { el.appendChild(document.createTextNode(' ')); }
+    });
+  });
+
+  var bar = document.createElement('div');
+  bar.className = 'progress';
+  bar.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(bar);
+
+  var stacking = window.matchMedia('(min-width: 900px) and (min-height: 700px)');
+
+  function frame() {
+    var vh = window.innerHeight;
+    var y = window.scrollY;
+    var headerH = masthead ? masthead.offsetHeight : 0;
+
+    hairline();
+
+    var scrollable = document.documentElement.scrollHeight - vh;
+    bar.style.setProperty('--p', scrollable > 0 ? clamp(y / scrollable).toFixed(4) : 0);
+
+    /* Hero eases back into a rounded card. Measured from layout offsets,
+       not from the transformed box, so the scale cannot feed back on itself. */
+    each('.hero.shrink', function (el) {
+      if (!shown(el)) { return; }
+      var start = el.offsetTop - headerH;
+      el.style.setProperty('--p', clamp((y - start) / (el.offsetHeight * 0.85)).toFixed(4));
+    });
+
+    /* Statement lights up word by word as it crosses the screen. */
+    each('.statement[data_words]', function (el) {
+      if (!shown(el)) { return; }
+      var r = el.getBoundingClientRect();
+      var p = clamp((vh * 0.86 - r.top) / (r.height + vh * 0.42));
+      var words = el.querySelectorAll('.w');
+      var lit = Math.round(p * words.length);
+      for (var i = 0; i < words.length; i++) {
+        words[i].classList.toggle('on', i < lit);
+      }
+    });
+
+    /* Service cards stack. Each one settles back a little as the next
+       slides over it. */
+    each('.stack', function (stack) {
+      if (!shown(stack)) { return; }
+      var cards = stack.querySelectorAll('.card');
+      for (var i = 0; i < cards.length; i++) {
+        var card = cards[i];
+        var next = cards[i + 1];
+        if (!next || !stacking.matches) { card.style.transform = ''; continue; }
+        var gap = next.getBoundingClientRect().top - card.getBoundingClientRect().top;
+        var t = clamp(1 - gap / card.offsetHeight);
+        card.style.transform = 'scale(' + (1 - t * 0.05).toFixed(4) + ')';
+      }
+    });
+
+    /* Band slides sideways with the scroll. */
+    each('.band', function (el) {
+      if (!shown(el)) { return; }
+      var r = el.getBoundingClientRect();
+      el.querySelector('.line').style.setProperty('--p', clamp((vh - r.top) / (vh + r.height)).toFixed(4));
+    });
+
+    /* Process line fills, and each step switches on as the line reaches it. */
+    each('.steps', function (el) {
+      if (!shown(el)) { return; }
+      var r = el.getBoundingClientRect();
+      var mark = vh * 0.62;
+      el.querySelector('.fill').style.setProperty('--p', clamp((mark - r.top) / r.height).toFixed(4));
+      Array.prototype.forEach.call(el.querySelectorAll('li'), function (li) {
+        li.classList.toggle('on', li.getBoundingClientRect().top + 12 < mark);
+      });
+    });
+  }
+
+  var queued = false;
+  function request() {
+    if (queued) { return; }
+    queued = true;
+    window.requestAnimationFrame(function () { queued = false; frame(); });
+  }
+
+  window.addEventListener('scroll', request, { passive: true });
+  window.addEventListener('resize', request);
+
+  /* ----- Pointer light ----- */
+
+  each('.hero.dark, .glow', function (el) {
+    el.addEventListener('pointermove', function (e) {
+      if (e.pointerType === 'touch') { return; }
+      var r = el.getBoundingClientRect();
+      el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      el.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    });
+  });
+
+  /* ----- Turning reduced motion on while the page is open ----- */
+
+  if (calm && calm.addEventListener) {
+    calm.addEventListener('change', function (e) {
+      if (!e.matches) { return; }
+      root.classList.remove('js_anim');
+      showAll();
+      bar.remove();
+      each('.stack .card', function (c) { c.style.transform = ''; });
+      window.removeEventListener('scroll', request);
+      window.addEventListener('scroll', hairline, { passive: true });
+    });
+  }
 
   /* The single file preview swaps pages in and out, so a newly shown page
-     needs observing again. */
+     needs observing and measuring again. */
   window.addEventListener('hashchange', function () {
-    window.setTimeout(watch, 40);
+    window.setTimeout(function () { watch(); request(); }, 60);
   });
+
+  watch();
+  frame();
 
 })();
