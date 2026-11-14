@@ -14,7 +14,7 @@ website/
   training.html     Career Services: training tracks, method, questions
   resume.html       Career Services: resume writing, interviews, job support
   contact.html      Contact form
-  login.html        The login, embedded inside the site
+  login.html        Login gateway, passes the visitor on to the login
   assets/css/styles.css
   assets/js/main.js
   assets/img/logo.png, favicon.png
@@ -23,21 +23,19 @@ website/
 
 ## Login
 
-The Login button opens `login.html`, a page of this site that shows the
-login inside a frame under the site header. The visitor stays on the site
-and never sees the address of the login. The framed address is:
+The Login button opens `login.html`, a small page of this site with the
+logo and a single button. On real hosting it passes the visitor straight on
+to the login after about a second, without showing the address:
 
     https://sites.google.com/view/rafter-technologies-outsource/full-page-embed?hl=en-IN
 
-To change it, edit the two places it appears in `login.html`.
+The "Continue to login" button is there for cases where an automatic move
+is not allowed. To change the address, edit the two places it appears in
+`login.html`: the `meta http-equiv="refresh"` line and the button.
 
-**Test this once the site is on real hosting.** Whether a page may be shown
-inside a frame on another site is decided by the server that owns it, here
-Google Sites, and it could not be checked while building. If Google refuses,
-the frame stays blank. For that case the page carries a line above the
-frame, "Login not loading? Open it in a new window", which always works.
-If the frame turns out to be blocked, point the Login button straight at the
-address instead and drop `login.html`.
+An earlier version showed the login inside a frame. That was dropped: it is
+blocked in the preview, and Google may refuse to be framed on a real host
+too, which would have left a blank page.
 
 ## Logo
 
@@ -147,6 +145,18 @@ characters.
 
 **Space.** An 8px rhythm, 112px between sections on desktop and 76px on
 phones, content in a 1200px column, 20px corner radius on cards.
+
+**Two sides, two shapes.** The IT services page and the Career Services
+page are built from different parts on purpose, so one never reads as a copy
+of the other.
+
+| | IT services (`index.html`) | Career Services (`career.html`) |
+|---|---|---|
+| Hero | Split, with a dashboard illustration | Centred, with a five stage journey |
+| Then | Sliding band of services | A sentence that lights up as you scroll |
+| Offer | Three numbered cards | Alternating rows, each with its own illustration |
+| Detail | Why us tiles, four step process track | Tracks behind two tabs |
+| Close | Centred panel | Words left, buttons right |
 
 **Illustrations.** The hero pictures are built from markup and CSS, not
 image files, so they stay sharp at any size and add nothing to download.

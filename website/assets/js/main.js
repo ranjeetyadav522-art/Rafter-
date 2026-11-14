@@ -201,11 +201,51 @@
 })();
 
 /* Rafter Technologies
+   Tabs. Without this script both panels simply show one after the other,
+   each under its own title, so nothing is lost. With it, the panels sit
+   behind tabs that work with the arrow keys. */
+
+(function () {
+  'use strict';
+
+  Array.prototype.forEach.call(document.querySelectorAll('[data_tabs]'), function (wrap) {
+    var tabs = Array.prototype.slice.call(wrap.querySelectorAll('[role="tab"]'));
+    if (!tabs.length) { return; }
+
+    function select(tab, focus) {
+      tabs.forEach(function (t) {
+        var on = t === tab;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+      });
+      if (focus) { tab.focus(); }
+    }
+
+    tabs.forEach(function (tab, i) {
+      tab.addEventListener('click', function () { select(tab, false); });
+      tab.addEventListener('keydown', function (e) {
+        var to = null;
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { to = tabs[(i + 1) % tabs.length]; }
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { to = tabs[(i - 1 + tabs.length) % tabs.length]; }
+        if (e.key === 'Home') { to = tabs[0]; }
+        if (e.key === 'End') { to = tabs[tabs.length - 1]; }
+        if (to) { e.preventDefault(); select(to, true); }
+      });
+    });
+
+    wrap.classList.add('ready');
+    select(tabs[0], false);
+  });
+
+})();
+
+/* Rafter Technologies
    Motion layer.
 
    settle   content rises into place the first time it is seen
-   scrub    the hero illustration, the band, the process track and the
-            reading bar follow the scroll position
+   scrub    the hero illustration, the statement, the band, the process
+            track and the reading bar follow the scroll position
    pointer  the hero window tilts a few degrees toward the cursor
 
    The gate below matters. Several resting states hide content, so the
@@ -269,6 +309,20 @@
 
   /* ----- Scrub ----- */
 
+  /* Split each statement into words once. The text and its spacing are left
+     intact, so it still reads as one paragraph to assistive technology. */
+  each('.statement[data_words]', function (el) {
+    var words = el.textContent.trim().split(/\s+/);
+    el.textContent = '';
+    words.forEach(function (word, i) {
+      var span = document.createElement('span');
+      span.className = 'w';
+      span.textContent = word;
+      el.appendChild(span);
+      if (i < words.length - 1) { el.appendChild(document.createTextNode(' ')); }
+    });
+  });
+
   var bar = document.createElement('div');
   bar.className = 'progress';
   bar.setAttribute('aria-hidden', 'true');
@@ -288,6 +342,16 @@
       if (!shown(el)) { return; }
       var viz = el.querySelector('.viz');
       if (viz) { viz.style.setProperty('--p', clamp(y / el.offsetHeight).toFixed(4)); }
+    });
+
+    /* Statement lights up word by word as it crosses the screen. */
+    each('.statement[data_words]', function (el) {
+      if (!shown(el)) { return; }
+      var r = el.getBoundingClientRect();
+      var p = clamp((vh * 0.88 - r.top) / (r.height + vh * 0.4));
+      var words = el.querySelectorAll('.w');
+      var lit = Math.round(p * words.length);
+      for (var i = 0; i < words.length; i++) { words[i].classList.toggle('on', i < lit); }
     });
 
     /* Band slides sideways with the scroll. */
