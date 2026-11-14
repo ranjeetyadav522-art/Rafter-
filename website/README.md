@@ -14,31 +14,41 @@ website/
   training.html     Career Services: training tracks, method, questions
   resume.html       Career Services: resume writing, interviews, job support
   contact.html      Contact form
+  login.html        The login, embedded inside the site
   assets/css/styles.css
   assets/js/main.js
   assets/img/logo.png, favicon.png
+  assets/fonts/lexend.woff2
 ```
 
 ## Login
 
-The Login button in the header, and the Login link in the footer, open the
-client portal in a new tab:
+The Login button opens `login.html`, a page of this site that shows the
+login inside a frame under the site header. The visitor stays on the site
+and never sees the address of the login. The framed address is:
 
     https://sites.google.com/view/rafter-technologies-outsource/full-page-embed?hl=en-IN
 
-To change the address, search the pages for `sites.google.com`.
+To change it, edit the two places it appears in `login.html`.
+
+**Test this once the site is on real hosting.** Whether a page may be shown
+inside a frame on another site is decided by the server that owns it, here
+Google Sites, and it could not be checked while building. If Google refuses,
+the frame stays blank. For that case the page carries a line above the
+frame, "Login not loading? Open it in a new window", which always works.
+If the frame turns out to be blocked, point the Login button straight at the
+address instead and drop `login.html`.
 
 ## Logo
 
 `assets/img/logo.png` is the supplied logo, resized only, with its colours
 and proportions untouched. It has a transparent background and dark artwork,
-so it is placed only on white or light grey. Do not put it on the black
-sections, where the shield would disappear.
+so it is placed only on white or light grey.
 
 ## Interactive preview
 
 `preview.html` is a single file build of the whole site: every page, the
-stylesheet, the script and the logo inlined, with client side routing. Open it directly
+stylesheet, the script, the font and the logo inlined, with client side routing. Open it directly
 in a browser, no server needed. It exists because some preview sandboxes will
 not navigate between separate html files, so the normal multi page build
 cannot be clicked through in them.
@@ -102,54 +112,59 @@ added later, they belong in the `contactlist` block in `contact.html`.
 
 ## Design system
 
-Minimal: large quiet type, generous white space, rounded tiles, hairline
-rows, and one accent colour. Rules taken from the design skills in this
-repository (ui-ux-pro-max, design-system, brand):
+A light, commercial layout in the style of a premium IT agency template:
+split hero with an illustration, service cards with icons, a why us section,
+a numbered process track, call to action panels and a light footer. Rules
+come from the design skills in this repository (ui-ux-pro-max,
+design-system, brand).
 
-**Colour.** Roughly 60 percent white and light grey, 30 percent black, and
-well under 10 percent orange. Orange is reserved for the primary button,
-text links, one headline accent in each hero, and the progress and process
-lines. It is never a section background.
+**Colour.** White first, with a warm tint for depth. There is no dark theme
+and no black section. Roughly 70 percent white and soft surfaces, 25 percent
+ink for text, and about 5 percent orange. Orange marks the primary button,
+icons, links, small labels and progress, and is never a full section
+background.
 
 | Token | Value | Use |
 |---|---|---|
-| Ink | `#1d1d1f` | Text on light surfaces, the Login button |
-| Black | `#000000` | Home hero, dark cards, closing tile |
-| Mist | `#f5f5f7` | Alternate sections, tiles, footer |
-| Grey | `#6e6e73` | Secondary text on light |
-| Accent | `#ff6a00` | Buttons, and links and accents on black |
-| Accent text | `#b93d0a` | Orange links on white or mist |
+| Ink | `#15151c` | Headings, the secondary button |
+| Body | `#50505c` | Paragraph text |
+| Muted | `#6b6b78` | Small print |
+| Soft | `#f7f7fa` | Alternate sections, footer |
+| Tint | `#fff6ee` and `#ffeede` | Hero, panels, icon boxes, labels |
+| Accent | `#ff6a00` | Primary button, icons, progress |
+| Accent text | `#b3390a` | Orange text and links |
 
-The bright orange measures 2.87:1 on white, which fails WCAG AA, so it never
-carries text on a light surface. Links there use `#b93d0a` at 5.16:1, and
-buttons carry ink text on orange at 5.86:1. All colours are CSS variables at
-the top of `styles.css`.
+White text on the orange measures 2.87:1 and fails WCAG AA, so orange
+buttons carry ink text at 6.33:1, and orange text on light surfaces uses the
+deeper `#b3390a` at 5.29:1 or better. All colours are CSS variables at the
+top of `styles.css`.
 
-**Type.** One family: the system font stack, with Inter as the web font
-fallback. One weight for headings (600), one for body (400). Body text is
-17px with lines kept under about 70 characters. Headline sizes scale with
-the screen through `clamp()`.
+**Type.** Lexend throughout, served from `assets/fonts/` so the text never
+depends on another server (SIL Open Font License, text included beside the
+file). Headings use weight 600, body 400, labels and buttons 500. Body text
+is about 16.5px with a 1.7 line height, and lines stay under roughly 70
+characters.
 
-**Space.** Spacing follows an 8px rhythm, sections are separated by 120px
-on desktop and 80px on phones, and content sits in a 1120px column.
+**Space.** An 8px rhythm, 112px between sections on desktop and 76px on
+phones, content in a 1200px column, 20px corner radius on cards.
+
+**Illustrations.** The hero pictures are built from markup and CSS, not
+image files, so they stay sharp at any size and add nothing to download.
 
 ## Motion
 
-Three kinds, and no more than one or two moving things in any one view:
+- **Settle.** Headline lines rise out of a mask, and cards and sections rise
+  into place the first time they scroll into view, a beat apart.
+- **Scrub.** The floating cards in the hero drift apart as you scroll, the
+  band of services slides sideways, the process track fills and switches
+  each step on, and a thin bar at the top shows reading progress.
+- **Idle.** The floating cards bob slowly and the chart bars grow on load.
+- **Pointer.** The hero window leans a few degrees toward the cursor, and
+  cards lift with an accent line on hover.
 
-- **Settle.** Headline lines rise out of a mask on load, and content rises
-  into place the first time it scrolls into view.
-- **Scrub.** A few elements follow the scroll position directly: the hero
-  eases back into a rounded card, the statement lights up word by word, the
-  three service cards stack over each other, the large word band slides
-  sideways, the process line fills, and a thin bar at the top shows how far
-  down the page you are.
-- **Pointer.** A soft light follows the cursor on the black hero and tiles.
-
-All of it sits behind a `js_anim` class that the script adds only when
-JavaScript runs and the visitor has not asked for reduced motion. With
-either of those the page is fully visible and static. Card stacking is also
-switched off on small or short screens, where a card would not fit.
+Everything that hides content at rest sits behind a `js_anim` class that the
+script adds only when JavaScript runs and the visitor has not asked for
+reduced motion. With either of those the page is fully visible and still.
 
 ## Accessibility
 

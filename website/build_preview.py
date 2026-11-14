@@ -5,7 +5,7 @@ The live site is separate pages, which is right for hosting and for search
 engines. Some preview sandboxes will not navigate between separate html
 files, so this bundles everything into one self contained file with client
 side routing: every page, the stylesheet, the script and the logo inlined.
-Only the web font is loaded from outside.
+Nothing is loaded from outside.
 
 Output: preview.html, in this same folder. Open it directly in a browser.
 
@@ -18,7 +18,7 @@ import os
 import re
 import sys
 
-PAGES = ["index", "career", "training", "resume", "contact"]
+PAGES = ["index", "career", "training", "resume", "contact", "login"]
 CAREER = ["career", "training", "resume"]
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -55,7 +55,7 @@ def build():
 
     # The header comes from a Career Services page, because that one carries
     # the section navigation as well. The router shows it only where it applies.
-    header = block(sources["career"], r'(<header class="masthead">.*?</header>)', "header")
+    header = block(sources["career"], r'(<div class="topbar">.*?</header>)', "header")
     header = header.replace(' aria-current="page"', "")
     header = rewrite_links(header)
 
@@ -98,6 +98,7 @@ def build():
       if (on) { a.setAttribute('aria-current', 'page'); } else { a.removeAttribute('aria-current'); }
     });
 
+    document.body.setAttribute('data_route', name);
     document.title = titles[name] || 'Rafter Technologies';
 
     var target = anchor ? document.getElementById(anchor) : null;
@@ -153,6 +154,10 @@ def build():
 """ % (css, banner, header, "\n".join(sections), footer, router, js)
 
     html = html.replace("assets/img/logo.png", logo)
+
+    with open(os.path.join(HERE, "assets", "fonts", "lexend.woff2"), "rb") as handle:
+        font = "data:font/woff2;base64," + base64.b64encode(handle.read()).decode("ascii")
+    html = html.replace("../fonts/lexend.woff2", font)
 
     out = os.path.join(HERE, "preview.html")
     with open(out, "w", encoding="utf-8") as handle:

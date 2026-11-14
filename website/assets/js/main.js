@@ -11,7 +11,7 @@
   var nav = document.getElementById('sitenav');
 
   if (toggle && nav) {
-    var mq = window.matchMedia('(max-width: 820px)');
+    var mq = window.matchMedia('(max-width: 960px)');
 
     function applyState() {
       if (mq.matches) {
@@ -204,9 +204,9 @@
    Motion layer.
 
    settle   content rises into place the first time it is seen
-   scrub    the hero, the statement, the service cards, the band and the
-            process line track the scroll position directly
-   pointer  a soft light follows the cursor on dark surfaces
+   scrub    the hero illustration, the band, the process track and the
+            reading bar follow the scroll position
+   pointer  the hero window tilts a few degrees toward the cursor
 
    The gate below matters. Several resting states hide content, so the
    .js_anim class that switches them on is added only when JavaScript runs
@@ -223,7 +223,7 @@
   function shown(el) { return el.offsetParent !== null; }
   function each(sel, fn) { Array.prototype.forEach.call(document.querySelectorAll(sel), fn); }
 
-  /* The header hairline is not motion, so it runs for everyone. */
+  /* The header shadow is not motion, so it runs for everyone. */
   function hairline() {
     if (masthead) { masthead.classList.toggle('stuck', window.scrollY > 8); }
   }
@@ -252,7 +252,7 @@
         entry.target.classList.add('seen');
         observer.unobserve(entry.target);
       });
-    }, { rootMargin: '0px 0px -6% 0px', threshold: 0.05 });
+    }, { rootMargin: '0px 0px -7% 0px', threshold: 0.06 });
   }
 
   function watch() {
@@ -260,79 +260,34 @@
     each('.reveal:not(.seen), .stagger:not(.seen)', function (el) {
       if (el.classList.contains('stagger')) {
         Array.prototype.forEach.call(el.children, function (child, i) {
-          child.style.transitionDelay = Math.min(i * 80, 400) + 'ms';
+          child.style.transitionDelay = Math.min(i * 90, 450) + 'ms';
         });
       }
       observer.observe(el);
     });
   }
 
-  /* ----- Scrub: prepare the pieces ----- */
-
-  /* Split each statement into words once. The text and its spacing are left
-     intact, so it still reads as one paragraph to assistive technology. */
-  each('.statement[data_words]', function (el) {
-    var words = el.textContent.trim().split(/\s+/);
-    el.textContent = '';
-    words.forEach(function (word, i) {
-      var span = document.createElement('span');
-      span.className = 'w';
-      span.textContent = word;
-      el.appendChild(span);
-      if (i < words.length - 1) { el.appendChild(document.createTextNode(' ')); }
-    });
-  });
+  /* ----- Scrub ----- */
 
   var bar = document.createElement('div');
   bar.className = 'progress';
   bar.setAttribute('aria-hidden', 'true');
   document.body.appendChild(bar);
 
-  var stacking = window.matchMedia('(min-width: 900px) and (min-height: 700px)');
-
   function frame() {
     var vh = window.innerHeight;
     var y = window.scrollY;
-    var headerH = masthead ? masthead.offsetHeight : 0;
 
     hairline();
 
     var scrollable = document.documentElement.scrollHeight - vh;
     bar.style.setProperty('--p', scrollable > 0 ? clamp(y / scrollable).toFixed(4) : 0);
 
-    /* Hero eases back into a rounded card. Measured from layout offsets,
-       not from the transformed box, so the scale cannot feed back on itself. */
-    each('.hero.shrink', function (el) {
+    /* Floating cards in the hero drift apart at different rates. */
+    each('.hero', function (el) {
       if (!shown(el)) { return; }
-      var start = el.offsetTop - headerH;
-      el.style.setProperty('--p', clamp((y - start) / (el.offsetHeight * 0.85)).toFixed(4));
-    });
-
-    /* Statement lights up word by word as it crosses the screen. */
-    each('.statement[data_words]', function (el) {
-      if (!shown(el)) { return; }
-      var r = el.getBoundingClientRect();
-      var p = clamp((vh * 0.86 - r.top) / (r.height + vh * 0.42));
-      var words = el.querySelectorAll('.w');
-      var lit = Math.round(p * words.length);
-      for (var i = 0; i < words.length; i++) {
-        words[i].classList.toggle('on', i < lit);
-      }
-    });
-
-    /* Service cards stack. Each one settles back a little as the next
-       slides over it. */
-    each('.stack', function (stack) {
-      if (!shown(stack)) { return; }
-      var cards = stack.querySelectorAll('.card');
-      for (var i = 0; i < cards.length; i++) {
-        var card = cards[i];
-        var next = cards[i + 1];
-        if (!next || !stacking.matches) { card.style.transform = ''; continue; }
-        var gap = next.getBoundingClientRect().top - card.getBoundingClientRect().top;
-        var t = clamp(1 - gap / card.offsetHeight);
-        card.style.transform = 'scale(' + (1 - t * 0.05).toFixed(4) + ')';
-      }
+      var viz = el.querySelector('.viz');
+      if (viz) { viz.style.setProperty('--p', clamp(y / el.offsetHeight).toFixed(4)); }
     });
 
     /* Band slides sideways with the scroll. */
@@ -342,15 +297,17 @@
       el.querySelector('.line').style.setProperty('--p', clamp((vh - r.top) / (vh + r.height)).toFixed(4));
     });
 
-    /* Process line fills, and each step switches on as the line reaches it. */
+    /* Process track fills, and each step switches on as the fill reaches it. */
     each('.steps', function (el) {
       if (!shown(el)) { return; }
       var r = el.getBoundingClientRect();
-      var mark = vh * 0.62;
-      el.querySelector('.fill').style.setProperty('--p', clamp((mark - r.top) / r.height).toFixed(4));
-      Array.prototype.forEach.call(el.querySelectorAll('li'), function (li) {
-        li.classList.toggle('on', li.getBoundingClientRect().top + 12 < mark);
-      });
+      var p = clamp((vh * 0.78 - r.top) / (r.height + vh * 0.2));
+      el.querySelector('.fill').style.setProperty('--p', p.toFixed(4));
+      var items = el.querySelectorAll('li');
+      for (var i = 0; i < items.length; i++) {
+        var at = items.length > 1 ? i / (items.length - 1) : 0;
+        items[i].classList.toggle('on', p >= at * 0.97 + 0.02);
+      }
     });
   }
 
@@ -364,14 +321,22 @@
   window.addEventListener('scroll', request, { passive: true });
   window.addEventListener('resize', request);
 
-  /* ----- Pointer light ----- */
+  /* ----- Pointer: the hero window leans toward the cursor ----- */
 
-  each('.hero.dark, .glow', function (el) {
+  each('.hero', function (el) {
+    var win = el.querySelector('.viz .win');
+    if (!win) { return; }
     el.addEventListener('pointermove', function (e) {
       if (e.pointerType === 'touch') { return; }
       var r = el.getBoundingClientRect();
-      el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
-      el.style.setProperty('--my', (e.clientY - r.top) + 'px');
+      var dx = (e.clientX - r.left) / r.width - 0.5;
+      var dy = (e.clientY - r.top) / r.height - 0.5;
+      win.style.setProperty('--ry', (dx * 7).toFixed(2) + 'deg');
+      win.style.setProperty('--rx', (dy * -6).toFixed(2) + 'deg');
+    });
+    el.addEventListener('pointerleave', function () {
+      win.style.setProperty('--ry', '0deg');
+      win.style.setProperty('--rx', '0deg');
     });
   });
 
@@ -383,7 +348,6 @@
       root.classList.remove('js_anim');
       showAll();
       bar.remove();
-      each('.stack .card', function (c) { c.style.transform = ''; });
       window.removeEventListener('scroll', request);
       window.addEventListener('scroll', hairline, { passive: true });
     });
