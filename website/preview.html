@@ -7,739 +7,97 @@
 <style>
 /* ==========================================================================
    Rafter Technologies
-   Flat design system. Black, white and orange.
-   Palette contrast verified to WCAG 2.1 AA:
-     ink on white ............ 19.80:1
-     white on ink ............ 19.80:1
-     ink on brand orange ..... 6.90:1
-     brand orange on ink ..... 6.90:1
-     deep orange on white .... 5.18:1  (used for every orange text on light)
-     slate on white .......... 7.81:1
-   Bright orange text is never placed on white. It fails at 2.87:1.
+   Minimal system. Black, white, one orange.
+
+   Contrast, WCAG 2.1 AA, measured:
+     ink on white ............ 16.83     ink on mist ............ 15.46
+     grey on white ............ 5.07     grey on mist ............ 4.66
+     text on black ........... 19.29     grey on black ........... 8.16
+     orange on black .......... 7.31     ink on orange button .... 5.86
+     orange text on white ..... 5.16+    orange text on mist ..... 5.16
+   The bright brand orange is never used for text on a light surface. It
+   measures 2.87 there. Light surfaces use the deeper --accent-text.
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Core brand */
-  --ink: #0a0a0a;
-  --ink-soft: #171717;
-  --ink-line: #262626;
+  --ink: #1d1d1f;
+  --black: #000000;
   --white: #ffffff;
-  --paper: #fafafa;
+  --mist: #f5f5f7;
+  --grey: #6e6e73;
+  --grey-on-dark: #a1a1a6;
+  --hairline: #d2d2d7;
+  --hairline-dark: #2c2c2e;
 
-  /* Orange, two tones for contrast safety */
-  --orange: #ff6a00;        /* fills, and text on dark only */
-  --orange-text: #c2410c;   /* orange text on light backgrounds */
-  --orange-deep: #e35c00;   /* hover state for fills */
+  --accent: #ff6a00;
+  --accent-hover: #ff7f24;
+  --accent-text: #b93d0a;
 
-  /* Neutrals */
-  --slate: #525252;
-  --slate-light: #a3a3a3;
-  --line: #e5e5e5;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+          "Inter", "Helvetica Neue", Arial, sans-serif;
 
-  /* Typography */
-  --font-head: 'Lexend', system-ui, sans-serif;
-  --font-body: 'Source Sans 3', system-ui, sans-serif;
-
-  /* Spacing scale, 8px rhythm */
-  --s1: 8px;
-  --s2: 16px;
-  --s3: 24px;
-  --s4: 32px;
-  --s5: 48px;
-  --s6: 64px;
-  --s7: 96px;
-  --s8: 128px;
-
-  --container: 1200px;
-  --speed: 180ms;
-  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --wrap: 1080px;
+  --radius: 28px;
+  --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
-
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
-  font-family: var(--font-body);
+  font-family: var(--font);
   font-size: 17px;
-  line-height: 1.65;
+  line-height: 1.47;
+  letter-spacing: -0.011em;
   color: var(--ink);
   background: var(--white);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4 {
-  font-family: var(--font-head);
-  line-height: 1.12;
-  letter-spacing: -0.02em;
-  margin: 0 0 var(--s3);
+h1, h2, h3 {
+  margin: 0;
+  font-weight: 600;
   text-wrap: balance;
 }
 
-h1 { font-size: clamp(2.4rem, 6.2vw, 4.4rem); font-weight: 800; }
-h2 { font-size: clamp(1.9rem, 4vw, 3rem); font-weight: 700; }
-h3 { font-size: clamp(1.15rem, 2vw, 1.45rem); font-weight: 600; }
+h1 { font-size: clamp(2.6rem, 7vw, 5rem); line-height: 1.05; letter-spacing: -0.03em; }
+h2 { font-size: clamp(2rem, 4.6vw, 3rem); line-height: 1.08; letter-spacing: -0.025em; }
+h3 { font-size: 1.3rem; line-height: 1.2; letter-spacing: -0.015em; }
 
-p { margin: 0 0 var(--s3); max-width: 68ch; }
+p { margin: 0; }
 
 a { color: inherit; }
 
-img, svg { max-width: 100%; display: block; }
+svg { display: block; }
 
-/* Focus visibility, never removed */
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible,
 summary:focus-visible {
-  outline: 3px solid var(--orange);
+  outline: 3px solid var(--accent);
   outline-offset: 3px;
-  border-radius: 2px;
+  border-radius: 6px;
 }
 
 .skiplink {
   position: absolute;
   left: -9999px;
-  top: 0;
-  background: var(--orange);
-  color: var(--ink);
-  padding: var(--s2) var(--s3);
-  font-weight: 700;
+  top: 8px;
+  background: var(--ink);
+  color: var(--white);
+  padding: 12px 18px;
+  border-radius: 980px;
+  font-size: 0.9rem;
   z-index: 200;
 }
-.skiplink:focus { left: 0; }
-
-/* ---------- Layout ---------- */
-
-.wrap {
-  width: 100%;
-  max-width: var(--container);
-  margin: 0 auto;
-  padding: 0 var(--s3);
-}
-
-.section { padding: var(--s7) 0; }
-.section.tight { padding: var(--s6) 0; }
-
-.section.dark {
-  background: var(--ink);
-  color: var(--white);
-}
-.section.dark h1,
-.section.dark h2,
-.section.dark h3 { color: var(--white); }
-
-.section.paper { background: var(--paper); }
-
-.eyebrow {
-  font-family: var(--font-head);
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--orange-text);
-  margin: 0 0 var(--s2);
-  display: block;
-}
-.section.dark .eyebrow { color: var(--orange); }
-
-.lede {
-  font-size: 1.15rem;
-  color: var(--slate);
-  max-width: 62ch;
-}
-.section.dark .lede { color: #d4d4d4; }
-
-.center { text-align: center; }
-.center p, .center .lede { margin-left: auto; margin-right: auto; }
-
-.grid { display: grid; gap: var(--s3); }
-.g2 { grid-template-columns: repeat(2, 1fr); }
-.g3 { grid-template-columns: repeat(3, 1fr); }
-.g4 { grid-template-columns: repeat(4, 1fr); }
-
-@media (max-width: 980px) {
-  .g3, .g4 { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 640px) {
-  .g2, .g3, .g4 { grid-template-columns: 1fr; }
-  .section { padding: var(--s6) 0; }
-}
-
-/* ---------- Header ---------- */
-
-.masthead {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: var(--ink);
-  border-bottom: 1px solid var(--ink-line);
-}
-
-.masthead .wrap {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 74px;
-  gap: var(--s3);
-}
-
-.brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--font-head);
-  font-weight: 800;
-  font-size: 1.16rem;
-  color: var(--white);
-  text-decoration: none;
-  letter-spacing: -0.02em;
-  flex-shrink: 0;
-}
-
-.brand .mark {
-  width: 30px;
-  height: 30px;
-  flex: 0 0 30px;
-}
-
-.brand em {
-  font-style: normal;
-  color: var(--orange);
-}
-
-.nav { display: flex; align-items: center; gap: var(--s1); }
-
-.nav a {
-  color: #d4d4d4;
-  text-decoration: none;
-  font-size: 0.95rem;
-  font-weight: 500;
-  padding: 10px 14px;
-  border-radius: 3px;
-  transition: color var(--speed) var(--ease), background var(--speed) var(--ease);
-  white-space: nowrap;
-}
-
-.nav a:hover { color: var(--white); background: var(--ink-soft); }
-
-.nav a[aria-current="page"] {
-  color: var(--white);
-  box-shadow: inset 0 -3px 0 var(--orange);
-}
-
-.navtoggle {
-  display: none;
-  background: transparent;
-  border: 1px solid var(--ink-line);
-  color: var(--white);
-  border-radius: 3px;
-  padding: 10px;
-  cursor: pointer;
-  min-width: 46px;
-  min-height: 46px;
-  align-items: center;
-  justify-content: center;
-}
-
-@media (max-width: 900px) {
-  .navtoggle { display: inline-flex; }
-  .nav {
-    position: fixed;
-    inset: 74px 0 auto 0;
-    background: var(--ink);
-    flex-direction: column;
-    align-items: stretch;
-    padding: var(--s2) var(--s3) var(--s4);
-    gap: 2px;
-    border-bottom: 1px solid var(--ink-line);
-    max-height: calc(100dvh - 74px);
-    overflow-y: auto;
-  }
-  .nav[hidden] { display: none; }
-  .nav a { padding: 14px 12px; font-size: 1.02rem; }
-  .nav .btn { margin-top: var(--s2); text-align: center; }
-}
-
-/* ---------- Buttons ---------- */
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-  font-family: var(--font-head);
-  font-weight: 600;
-  font-size: 0.98rem;
-  padding: 15px 26px;
-  min-height: 48px;
-  border: 2px solid transparent;
-  border-radius: 3px;
-  text-decoration: none;
-  cursor: pointer;
-  transition: background var(--speed) var(--ease), color var(--speed) var(--ease), border-color var(--speed) var(--ease);
-  touch-action: manipulation;
-}
-
-.btn.primary { background: var(--orange); color: var(--ink); border-color: var(--orange); }
-.btn.primary:hover { background: var(--orange-deep); border-color: var(--orange-deep); }
-
-.btn.ghost { background: transparent; color: var(--white); border-color: #404040; }
-.btn.ghost:hover { border-color: var(--white); background: var(--ink-soft); }
-
-.btn.dark { background: var(--ink); color: var(--white); border-color: var(--ink); }
-.btn.dark:hover { background: var(--ink-soft); border-color: var(--ink-soft); }
-
-.btn.line { background: transparent; color: var(--ink); border-color: var(--ink); }
-.btn.line:hover { background: var(--ink); color: var(--white); }
-
-.btnrow { display: flex; flex-wrap: wrap; gap: var(--s2); }
-
-/* ---------- Hero ---------- */
-
-.hero {
-  background: var(--ink);
-  color: var(--white);
-  padding: var(--s8) 0 var(--s7);
-  position: relative;
-  overflow: hidden;
-}
-
-.hero::after {
-  content: "";
-  position: absolute;
-  right: -180px;
-  top: -180px;
-  width: 620px;
-  height: 620px;
-  background: var(--orange);
-  opacity: 0.11;
-  transform: rotate(32deg);
-  pointer-events: none;
-}
-
-@media (max-width: 760px) {
-  .hero { padding: var(--s6) 0 var(--s5); }
-  .hero::after { width: 380px; height: 380px; right: -140px; top: -140px; }
-}
-
-.hero .wrap { position: relative; z-index: 1; }
-.hero h1 { color: var(--white); max-width: 17ch; }
-.hero h1 em { font-style: normal; color: var(--orange); }
-
-.hero .lede { font-size: 1.22rem; color: #d4d4d4; margin-bottom: var(--s5); }
-
-.tagstrip {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--s1);
-  margin-bottom: var(--s4);
-  padding: 0;
-  list-style: none;
-}
-
-.tagstrip li {
-  font-family: var(--font-head);
-  font-size: 0.76rem;
-  font-weight: 600;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  border: 1px solid #404040;
-  color: #d4d4d4;
-  padding: 7px 13px;
-  border-radius: 999px;
-}
-
-.herofoot {
-  margin-top: var(--s6);
-  padding-top: var(--s4);
-  border-top: 1px solid var(--ink-line);
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--s3);
-}
-
-@media (max-width: 820px) { .herofoot { grid-template-columns: repeat(2, 1fr); } }
-
-.herofoot div strong {
-  display: block;
-  font-family: var(--font-head);
-  font-size: 1.02rem;
-  font-weight: 700;
-  color: var(--orange);
-  margin-bottom: 4px;
-}
-
-.herofoot div span { font-size: 0.93rem; color: #a3a3a3; }
-
-/* ---------- Cards ---------- */
-
-.card {
-  background: var(--white);
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  padding: var(--s4);
-  transition: border-color var(--speed) var(--ease);
-  display: flex;
-  flex-direction: column;
-}
-
-.card:hover { border-color: var(--ink); }
-.card h3 { margin-bottom: var(--s2); }
-.card p { font-size: 0.99rem; color: var(--slate); margin-bottom: var(--s2); }
-.card p:last-of-type { margin-bottom: 0; }
-
-.card .icon {
-  width: 44px;
-  height: 44px;
-  color: var(--orange-text);
-  margin-bottom: var(--s3);
-}
-
-.card .more {
-  margin-top: auto;
-  padding-top: var(--s3);
-  font-family: var(--font-head);
-  font-weight: 600;
-  font-size: 0.92rem;
-  color: var(--orange-text);
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-}
-.card .more:hover { text-decoration: underline; }
-
-.section.dark .card {
-  background: var(--ink-soft);
-  border-color: var(--ink-line);
-}
-.section.dark .card:hover { border-color: var(--orange); }
-.section.dark .card p { color: #a3a3a3; }
-.section.dark .card .icon { color: var(--orange); }
-.section.dark .card .more { color: var(--orange); }
-
-/* Numbered step cards */
-
-.step {
-  border-top: 3px solid var(--line);
-  padding-top: var(--s3);
-}
-
-.step .num {
-  font-family: var(--font-head);
-  font-size: 2.3rem;
-  font-weight: 800;
-  line-height: 1;
-  color: var(--orange-text);
-  display: block;
-  margin-bottom: var(--s2);
-}
-
-.step h3 { font-size: 1.08rem; margin-bottom: var(--s1); }
-.step p { font-size: 0.96rem; color: var(--slate); margin: 0; }
-
-.section.dark .step { border-top-color: var(--ink-line); }
-.section.dark .step .num { color: var(--orange); }
-.section.dark .step p { color: #a3a3a3; }
-
-/* ---------- Track list ---------- */
-
-.tracks {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  gap: 0;
-}
-
-.tracks li {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--s2);
-  padding: 15px 0;
-  border-bottom: 1px solid var(--line);
-  font-size: 1rem;
-}
-
-.tracks li:first-child { border-top: 1px solid var(--line); }
-
-.tracks .tick {
-  width: 21px;
-  height: 21px;
-  flex: 0 0 21px;
-  margin-top: 3px;
-  color: var(--orange-text);
-}
-
-.tracks strong { font-weight: 600; }
-.tracks span { color: var(--slate); }
-
-.section.dark .tracks li { border-bottom-color: var(--ink-line); }
-.section.dark .tracks li:first-child { border-top-color: var(--ink-line); }
-.section.dark .tracks .tick { color: var(--orange); }
-.section.dark .tracks span { color: #a3a3a3; }
-
-/* ---------- Split panel ---------- */
-
-.split {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--s5);
-  align-items: start;
-}
-
-@media (max-width: 900px) { .split { grid-template-columns: 1fr; gap: var(--s5); } }
-
-.panel {
-  border: 2px solid var(--ink);
-  border-radius: 4px;
-  padding: var(--s5) var(--s4);
-}
-
-.panel.filled { background: var(--ink); color: var(--white); }
-.panel.filled h2, .panel.filled h3 { color: var(--white); }
-.panel.filled p { color: #d4d4d4; }
-
-/* ---------- Callout band ---------- */
-
-.band {
-  background: var(--orange);
-  color: var(--ink);
-  padding: var(--s7) 0;
-}
-
-.band h2 { color: var(--ink); max-width: 20ch; }
-.band p { color: #401a00; font-size: 1.12rem; font-weight: 500; }
-
-.band .inner {
-  display: grid;
-  grid-template-columns: 1.3fr 1fr;
-  gap: var(--s5);
-  align-items: center;
-}
-
-@media (max-width: 860px) { .band .inner { grid-template-columns: 1fr; } }
-
-/* ---------- Detail rows ---------- */
-
-.rows { border-top: 1px solid var(--line); }
-
-.row {
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: var(--s4);
-  padding: var(--s4) 0;
-  border-bottom: 1px solid var(--line);
-}
-
-@media (max-width: 800px) {
-  .row { grid-template-columns: 1fr; gap: var(--s2); }
-}
-
-.row h3 { margin: 0; }
-.row p { margin: 0; color: var(--slate); }
-
-/* ---------- Accordion ---------- */
-
-.faq { border-top: 1px solid var(--line); }
-
-.faq details {
-  border-bottom: 1px solid var(--line);
-}
-
-.faq summary {
-  font-family: var(--font-head);
-  font-weight: 600;
-  font-size: 1.05rem;
-  padding: var(--s3) 44px var(--s3) 0;
-  cursor: pointer;
-  position: relative;
-  list-style: none;
-  min-height: 48px;
-  display: flex;
-  align-items: center;
-}
-
-.faq summary::-webkit-details-marker { display: none; }
-
-.faq summary::after {
-  content: "";
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  width: 13px;
-  height: 13px;
-  border-right: 2px solid var(--orange-text);
-  border-bottom: 2px solid var(--orange-text);
-  transform: translateY(-65%) rotate(45deg);
-  transition: transform var(--speed) var(--ease);
-}
-
-.faq details[open] summary::after { transform: translateY(-25%) rotate(225deg); }
-
-.faq .answer { padding: 0 0 var(--s3); }
-.faq .answer p { color: var(--slate); margin-bottom: var(--s2); }
-.faq .answer p:last-child { margin-bottom: 0; }
-
-/* ---------- Form ---------- */
-
-.form {
-  display: grid;
-  gap: var(--s3);
-  grid-template-columns: repeat(2, 1fr);
-}
-
-@media (max-width: 720px) { .form { grid-template-columns: 1fr; } }
-
-.field { display: flex; flex-direction: column; gap: 7px; }
-.field.full { grid-column: 1 / -1; }
-
-.field label {
-  font-family: var(--font-head);
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-.field .req { color: var(--orange-text); }
-
-.field .hint { font-size: 0.85rem; color: var(--slate); }
-
-.field input,
-.field select,
-.field textarea {
-  font-family: var(--font-body);
-  font-size: 1rem;
-  padding: 13px 15px;
-  min-height: 48px;
-  border: 1px solid #c4c4c4;
-  border-radius: 3px;
-  background: var(--white);
-  color: var(--ink);
-  width: 100%;
-  transition: border-color var(--speed) var(--ease);
-}
-
-.field textarea { min-height: 132px; resize: vertical; }
-
-.field input:hover,
-.field select:hover,
-.field textarea:hover { border-color: var(--slate); }
-
-.field input[aria-invalid="true"],
-.field select[aria-invalid="true"],
-.field textarea[aria-invalid="true"] { border-color: #b91c1c; border-width: 2px; }
-
-.field .error {
-  font-size: 0.87rem;
-  font-weight: 600;
-  color: #b91c1c;
-  min-height: 0;
-}
-
-.field .error:empty { display: none; }
-
-.formnote { font-size: 0.9rem; color: var(--slate); }
-
-.summary {
-  grid-column: 1 / -1;
-  border: 2px solid #b91c1c;
-  border-radius: 3px;
-  padding: var(--s3);
-  background: #fef2f2;
-}
-
-.summary[hidden] { display: none; }
-.summary h3 { color: #b91c1c; font-size: 1.02rem; margin-bottom: var(--s1); }
-.summary ul { margin: 0; padding-left: 20px; }
-.summary a { color: #b91c1c; font-weight: 600; }
-
-.sent {
-  grid-column: 1 / -1;
-  border: 2px solid var(--ink);
-  border-radius: 3px;
-  padding: var(--s3);
-  background: var(--paper);
-  font-weight: 500;
-}
-
-.sent[hidden] { display: none; }
-
-/* ---------- Contact aside ---------- */
-
-.contactlist { list-style: none; padding: 0; margin: 0; }
-
-.contactlist li {
-  display: flex;
-  gap: var(--s2);
-  padding: var(--s3) 0;
-  border-bottom: 1px solid var(--ink-line);
-}
-
-.contactlist .icon { width: 22px; height: 22px; flex: 0 0 22px; color: var(--orange); margin-top: 3px; }
-.contactlist strong { display: block; font-family: var(--font-head); font-size: 0.92rem; margin-bottom: 2px; }
-.contactlist a, .contactlist span { color: #d4d4d4; text-decoration: none; font-size: 0.97rem; }
-.contactlist a:hover { color: var(--orange); text-decoration: underline; }
-
-/* ---------- Footer ---------- */
-
-.foot {
-  background: var(--ink);
-  color: #a3a3a3;
-  padding: var(--s6) 0 var(--s4);
-  border-top: 1px solid var(--ink-line);
-}
-
-.foot .cols {
-  display: grid;
-  grid-template-columns: 1.7fr 1fr 1fr 1fr;
-  gap: var(--s4);
-  padding-bottom: var(--s5);
-}
-
-@media (max-width: 900px) { .foot .cols { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 560px) { .foot .cols { grid-template-columns: 1fr; gap: var(--s4); } }
-
-.foot h4 {
-  font-family: var(--font-head);
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-  color: var(--white);
-  margin: 0 0 var(--s2);
-}
-
-.foot ul { list-style: none; margin: 0; padding: 0; }
-.foot li { margin-bottom: 9px; }
-
-.foot a { color: #a3a3a3; text-decoration: none; font-size: 0.96rem; }
-.foot a:hover { color: var(--orange); text-decoration: underline; }
-
-.foot .about p { font-size: 0.96rem; color: #a3a3a3; max-width: 38ch; }
-
-.foot .base {
-  border-top: 1px solid var(--ink-line);
-  padding-top: var(--s3);
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--s2);
-  justify-content: space-between;
-  font-size: 0.89rem;
-}
+.skiplink:focus { left: 8px; }
 
 .visually_hidden {
   position: absolute;
@@ -750,375 +108,668 @@ summary:focus-visible {
   white-space: nowrap;
 }
 
+/* ---------- Layout ---------- */
+
+.wrap {
+  width: 100%;
+  max-width: var(--wrap);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.wrap.narrow { max-width: 780px; }
+
+.section { padding: 120px 0; }
+.section.mist { background: var(--mist); }
+.section.black { background: var(--black); color: var(--mist); }
+.section.flush { padding-top: 0; }
+
+@media (max-width: 720px) {
+  .section { padding: 80px 0; }
+}
+
+.head { max-width: 720px; margin: 0 0 56px; }
+.head.center { margin-left: auto; margin-right: auto; text-align: center; }
+.head p { margin-top: 18px; }
+
+.sub {
+  font-size: clamp(1.15rem, 2vw, 1.35rem);
+  line-height: 1.4;
+  letter-spacing: -0.015em;
+  color: var(--grey);
+}
+
+.section.black .sub { color: var(--grey-on-dark); }
+
+.muted { color: var(--grey); }
+.section.black .muted { color: var(--grey-on-dark); }
+
+/* ---------- Header ---------- */
+
+.masthead {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.82);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid transparent;
+  transition: border-color 240ms var(--ease);
+}
+
+.masthead.stuck { border-bottom-color: rgba(0, 0, 0, 0.1); }
+
+.masthead .wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 52px;
+  gap: 24px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.brand .mark { width: 22px; height: 22px; flex: 0 0 22px; }
+
+.nav { display: flex; align-items: center; gap: 30px; }
+
+.nav a {
+  font-size: 0.82rem;
+  letter-spacing: -0.005em;
+  color: var(--ink);
+  opacity: 0.8;
+  text-decoration: none;
+  padding: 8px 0;
+  transition: opacity 200ms var(--ease);
+  white-space: nowrap;
+}
+
+.nav a:hover,
+.nav a[aria-current="page"] { opacity: 1; }
+
+.nav a[aria-current="page"] { font-weight: 600; }
+
+.nav a.pill {
+  opacity: 1;
+  font-weight: 500;
+  background: var(--ink);
+  color: var(--white);
+  padding: 7px 15px;
+  border-radius: 980px;
+  transition: background 200ms var(--ease);
+}
+
+.nav a.pill:hover { background: #3a3a3c; }
+
+.navtoggle {
+  display: none;
+  background: transparent;
+  border: 0;
+  color: var(--ink);
+  padding: 0;
+  width: 44px;
+  height: 44px;
+  margin-right: -10px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 820px) {
+  .navtoggle { display: inline-flex; }
+  .nav {
+    position: fixed;
+    inset: 52px 0 0 0;
+    background: var(--white);
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 20px 24px 40px;
+    overflow-y: auto;
+  }
+  .nav[hidden] { display: none; }
+  .nav a {
+    font-size: 1.6rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    opacity: 1;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .nav a.pill {
+    margin-top: 28px;
+    border-bottom: 0;
+    text-align: center;
+    font-size: 1.05rem;
+    padding: 15px;
+  }
+}
+
+/* ---------- Buttons and links ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 11px 24px;
+  border: 0;
+  border-radius: 980px;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  cursor: pointer;
+  background: var(--accent);
+  color: var(--ink);
+  transition: background 200ms var(--ease);
+  touch-action: manipulation;
+}
+
+.btn:hover { background: var(--accent-hover); }
+.btn[disabled] { opacity: 0.5; cursor: default; }
+
+.btn.dark { background: var(--ink); color: var(--white); }
+.btn.dark:hover { background: #3a3a3c; }
+
+.more {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  font-size: 1.05rem;
+  color: var(--accent-text);
+  text-decoration: none;
+}
+
+.more::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid currentColor;
+  border-top: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 200ms var(--ease);
+}
+
+.more:hover { text-decoration: underline; text-underline-offset: 4px; }
+.more:hover::after { transform: translateX(3px) rotate(45deg); }
+
+.tile.dark .more,
+.section.black .more,
+.hero.dark .more { color: var(--accent); }
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 28px;
+}
+
+.center .actions, .actions.center { justify-content: center; }
+
+/* ---------- Hero ---------- */
+
+.hero {
+  padding: 120px 0 110px;
+  text-align: center;
+}
+
+.hero.dark { background: var(--black); color: var(--mist); }
+
+.hero .wrap { max-width: 900px; }
+
+.hero h1 em { font-style: normal; color: var(--accent-text); }
+.hero.dark h1 em { color: var(--accent); }
+
+.hero .sub {
+  max-width: 640px;
+  margin: 26px auto 0;
+  font-size: clamp(1.2rem, 2.3vw, 1.5rem);
+}
+
+.hero.dark .sub { color: var(--grey-on-dark); }
+
+.hero .actions { margin-top: 38px; justify-content: center; }
+
+.hero .fields {
+  margin: 84px auto 0;
+  max-width: 700px;
+  font-size: 0.86rem;
+  line-height: 1.9;
+  color: var(--grey-on-dark);
+}
+
+.hero.small { padding: 96px 0 72px; }
+
+@media (max-width: 720px) {
+  .hero { padding: 84px 0 76px; }
+  .hero .fields { margin-top: 60px; }
+  .hero.small { padding: 68px 0 48px; }
+}
+
+/* ---------- Tiles ---------- */
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.tiles.three { grid-template-columns: repeat(3, 1fr); }
+
+.tile {
+  background: var(--mist);
+  border-radius: var(--radius);
+  padding: 48px 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 320px;
+}
+
+.section.mist .tile { background: var(--white); }
+
+.tile.wide { grid-column: 1 / -1; min-height: 380px; }
+
+.tile.dark { background: var(--black); color: var(--mist); }
+
+.tile .label {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--grey);
+  margin-bottom: 12px;
+}
+
+.tile.dark .label { color: var(--grey-on-dark); }
+
+.tile h3 {
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  max-width: 17ch;
+}
+
+.tile.wide h3 { font-size: clamp(2rem, 4.4vw, 3rem); max-width: 16ch; }
+
+.tile p {
+  margin-top: 14px;
+  color: var(--grey);
+  max-width: 46ch;
+}
+
+.tile.dark p { color: var(--grey-on-dark); }
+
+.tile .more { margin-top: auto; padding-top: 26px; }
+
+.tile.plain { min-height: 0; }
+.tile.plain h3 { font-size: 1.3rem; letter-spacing: -0.015em; max-width: none; }
+
+@media (max-width: 900px) {
+  .tiles.three { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 720px) {
+  .tiles { grid-template-columns: 1fr; gap: 14px; }
+  .tile { padding: 36px 28px; min-height: 0; border-radius: 22px; }
+  .tile.wide { min-height: 0; }
+}
+
+/* ---------- Text features ---------- */
+
+.points {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 56px 48px;
+}
+
+.points h3 { margin-bottom: 10px; }
+.points p { color: var(--grey); }
+.section.black .points p { color: var(--grey-on-dark); }
+
+@media (max-width: 860px) {
+  .points { grid-template-columns: 1fr; gap: 36px; }
+}
+
+/* ---------- Rows ---------- */
+
+.rows { border-top: 1px solid var(--hairline); }
+
+.rows > div {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 8px 40px;
+  padding: 26px 0;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.rows h3 { font-size: 1.15rem; }
+.rows p { color: var(--grey); }
+
+.section.black .rows,
+.section.black .rows > div { border-color: var(--hairline-dark); }
+.section.black .rows p { color: var(--grey-on-dark); }
+
+@media (max-width: 720px) {
+  .rows > div { grid-template-columns: 1fr; padding: 22px 0; }
+}
+
+/* ---------- Two column ---------- */
+
+.pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 64px;
+  align-items: start;
+}
+
+.pair .head { margin-bottom: 0; }
+
+.pair h3.group {
+  font-size: 0.86rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--grey);
+  margin-bottom: 14px;
+}
+
+.section.black .pair h3.group { color: var(--grey-on-dark); }
+
+@media (max-width: 860px) {
+  .pair { grid-template-columns: 1fr; gap: 48px; }
+}
+
+.pair .rows > div { grid-template-columns: 1fr; gap: 4px; padding: 20px 0; }
+
+/* ---------- Closing tile ---------- */
+
+.closing {
+  background: var(--black);
+  color: var(--mist);
+  border-radius: var(--radius);
+  padding: 96px 32px;
+  text-align: center;
+}
+
+.closing h2 { max-width: 16ch; margin: 0 auto; }
+.closing p { margin: 18px auto 0; max-width: 46ch; color: var(--grey-on-dark); }
+.closing .actions { margin-top: 34px; justify-content: center; }
+
+@media (max-width: 720px) {
+  .closing { padding: 64px 24px; border-radius: 22px; }
+}
+
+/* ---------- Note ---------- */
+
+.note {
+  margin-top: 56px;
+  background: var(--mist);
+  border-radius: var(--radius);
+  padding: 40px 44px;
+}
+
+.section.mist .note { background: var(--white); }
+.note h3 { margin-bottom: 10px; }
+.note p { color: var(--grey); max-width: 70ch; }
+
+@media (max-width: 720px) { .note { padding: 30px 26px; border-radius: 22px; } }
+
+/* ---------- Questions ---------- */
+
+.faq { border-top: 1px solid var(--hairline); }
+.faq details { border-bottom: 1px solid var(--hairline); }
+
+.faq summary {
+  list-style: none;
+  cursor: pointer;
+  position: relative;
+  padding: 24px 48px 24px 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  min-height: 48px;
+}
+
+.faq summary::-webkit-details-marker { display: none; }
+
+.faq summary::before,
+.faq summary::after {
+  content: "";
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  width: 14px;
+  height: 1.5px;
+  background: var(--ink);
+  transition: transform 240ms var(--ease);
+}
+
+.faq summary::after { transform: rotate(90deg); }
+.faq details[open] summary::after { transform: rotate(0deg); }
+
+.faq .answer { padding: 0 48px 26px 0; color: var(--grey); max-width: 70ch; }
+
+/* ---------- Form ---------- */
+
+.form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px 18px;
+}
+
+@media (max-width: 720px) { .form { grid-template-columns: 1fr; } }
+
+.field { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+.field.full { grid-column: 1 / -1; }
+
+.field label { font-size: 0.9rem; font-weight: 500; }
+.field .req { color: var(--accent-text); }
+.field .hint { font-size: 0.84rem; color: var(--grey); }
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  min-height: 50px;
+  padding: 13px 16px;
+  font-family: inherit;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  background: var(--white);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  transition: border-color 200ms var(--ease);
+}
+
+.field textarea { min-height: 140px; resize: vertical; }
+
+.field input:hover,
+.field select:hover,
+.field textarea:hover { border-color: #86868b; }
+
+.field input::placeholder { color: #86868b; }
+
+.field [aria-invalid="true"] { border-color: #b91c1c; box-shadow: 0 0 0 1px #b91c1c; }
+
+.field .error { font-size: 0.86rem; font-weight: 500; color: #b91c1c; }
+.field .error:empty { display: none; }
+
+.summary {
+  grid-column: 1 / -1;
+  background: #fff5f5;
+  border-radius: 14px;
+  padding: 20px 22px;
+  color: #b91c1c;
+}
+
+.summary[hidden] { display: none; }
+.summary h3 { font-size: 1rem; margin-bottom: 8px; }
+.summary ul { margin: 0; padding-left: 18px; }
+.summary a { color: #b91c1c; }
+
+.sent {
+  grid-column: 1 / -1;
+  background: var(--mist);
+  border: 1px solid transparent;
+  border-radius: 14px;
+  padding: 18px 22px;
+  font-weight: 500;
+}
+
+.sent[hidden] { display: none; }
+
+.formnote { margin-top: 14px; font-size: 0.86rem; color: var(--grey); }
+
+.contact {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+  gap: 56px;
+  align-items: start;
+}
+
+@media (max-width: 900px) { .contact { grid-template-columns: 1fr; gap: 40px; } }
+
+.direct { background: var(--mist); border-radius: var(--radius); padding: 36px 34px; }
+.direct h2 { font-size: 1.3rem; letter-spacing: -0.015em; margin-bottom: 22px; }
+.direct dl { margin: 0; }
+.direct dt { font-size: 0.84rem; color: var(--grey); }
+.direct dd { margin: 2px 0 20px; font-size: 1.05rem; overflow-wrap: anywhere; }
+.direct dd:last-child { margin-bottom: 0; }
+.direct a { color: var(--accent-text); text-decoration: none; }
+.direct a:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+/* ---------- Footer ---------- */
+
+.foot {
+  background: var(--mist);
+  color: var(--grey);
+  font-size: 0.82rem;
+  padding: 56px 0 28px;
+  margin-top: 0;
+}
+
+.foot .cols {
+  display: grid;
+  grid-template-columns: 1.6fr repeat(3, 1fr);
+  gap: 32px;
+  padding-bottom: 36px;
+}
+
+.foot .brand { margin-bottom: 12px; }
+.foot .about p { max-width: 34ch; }
+
+.foot h4 {
+  margin: 0 0 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.foot ul { list-style: none; margin: 0; padding: 0; }
+.foot li { margin-bottom: 9px; }
+.foot a { color: var(--grey); text-decoration: none; overflow-wrap: anywhere; }
+.foot a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+
+.foot .base { border-top: 1px solid var(--hairline); padding-top: 20px; }
+
+@media (max-width: 820px) { .foot .cols { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px) { .foot .cols { grid-template-columns: 1fr; } }
+
+/* ---------- Preview build only ---------- */
+
+.previewbar {
+  background: var(--mist);
+  color: var(--grey);
+  font-size: 0.78rem;
+  text-align: center;
+  padding: 9px 16px;
+}
+
+.routed[hidden] { display: none; }
+
 /* ==========================================================================
    Motion
-   Everything here is gated behind .js_anim, which the script adds to <html>
-   only when JavaScript runs AND the visitor has not asked for reduced
-   motion. That ordering matters: the resting state of a revealed element is
-   invisible, so if the gate were in the base stylesheet, anyone with
-   JavaScript off or reduced motion on would be left staring at a blank page.
-   Only transform and opacity are animated, so nothing triggers layout.
+   Deliberately quiet: content settles into place once, and nothing loops.
+   All of it sits behind .js_anim, which the script adds only when JavaScript
+   runs and the visitor has not asked for reduced motion. The resting state
+   of a revealed element is invisible, so without that gate a visitor with
+   scripts off or reduced motion on would get a blank page.
    ========================================================================== */
 
-/* ---------- Scroll reveal ---------- */
-
-.js_anim .reveal {
-  opacity: 0;
-  transform: translateY(22px);
-  transition: opacity 520ms var(--ease), transform 520ms var(--ease);
-  will-change: opacity, transform;
-}
-
-.js_anim .reveal.seen {
-  opacity: 1;
-  transform: none;
-  will-change: auto;
-}
-
-/* Children stagger in. The delay is set inline by the script, 40ms apart,
-   which the motion guidance caps well below the point where a long row
-   starts to feel slow. */
+.js_anim .reveal,
 .js_anim .stagger > * {
   opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 460ms var(--ease), transform 460ms var(--ease);
+  transform: translateY(18px);
+  transition: opacity 700ms var(--ease), transform 700ms var(--ease);
 }
 
+.js_anim .reveal.seen,
 .js_anim .stagger.seen > * {
   opacity: 1;
   transform: none;
 }
 
-/* Sideways variants for split sections */
-.js_anim .reveal.from_left { transform: translateX(-26px); }
-.js_anim .reveal.from_right { transform: translateX(26px); }
-.js_anim .reveal.from_left.seen,
-.js_anim .reveal.from_right.seen { transform: none; }
-
-/* ---------- Hero entrance ---------- */
-
 .js_anim .hero .enter {
   opacity: 0;
-  transform: translateY(26px);
-  animation: rise 720ms var(--ease) forwards;
+  transform: translateY(16px);
+  animation: settle 900ms var(--ease) forwards;
 }
 
-.js_anim .hero .enter:nth-child(1) { animation-delay: 60ms; }
-.js_anim .hero .enter:nth-child(2) { animation-delay: 140ms; }
-.js_anim .hero .enter:nth-child(3) { animation-delay: 220ms; }
-.js_anim .hero .enter:nth-child(4) { animation-delay: 300ms; }
-.js_anim .hero .enter:nth-child(5) { animation-delay: 380ms; }
-.js_anim .hero .enter:nth-child(6) { animation-delay: 460ms; }
+.js_anim .hero .enter:nth-child(2) { animation-delay: 90ms; }
+.js_anim .hero .enter:nth-child(3) { animation-delay: 180ms; }
+.js_anim .hero .enter:nth-child(4) { animation-delay: 320ms; }
 
-@keyframes rise {
-  to { opacity: 1; transform: none; }
-}
+@keyframes settle { to { opacity: 1; transform: none; } }
 
-/* The angled brand shape drifts very slightly so the hero is never
-   completely static. Small amplitude on purpose: this sits behind text. */
-.js_anim .hero::after {
-  animation: drift 22s ease-in-out infinite alternate;
-}
+.js_anim .routed:not([hidden]) { animation: pagein 500ms var(--ease); }
 
-@keyframes drift {
-  from { transform: rotate(32deg) translate3d(0, 0, 0) scale(1); }
-  to   { transform: rotate(38deg) translate3d(-26px, 22px, 0) scale(1.06); }
-}
-
-/* ---------- Header on scroll ---------- */
-
-.masthead {
-  transition: background 220ms var(--ease), box-shadow 220ms var(--ease);
-}
-
-.masthead.stuck {
-  background: rgba(10, 10, 10, 0.92);
-  backdrop-filter: saturate(140%) blur(10px);
-  box-shadow: 0 1px 0 var(--ink-line), 0 8px 28px rgba(0, 0, 0, 0.35);
-}
-
-.masthead .wrap { transition: min-height 220ms var(--ease); }
-.masthead.stuck .wrap { min-height: 62px; }
-
-/* Nav underline grows from the centre rather than snapping in */
-.nav a:not(.btn) { position: relative; }
-
-.nav a:not(.btn)::after {
-  content: "";
-  position: absolute;
-  left: 14px;
-  right: 14px;
-  bottom: 4px;
-  height: 2px;
-  background: var(--orange);
-  transform: scaleX(0);
-  transform-origin: center;
-  transition: transform 220ms var(--ease);
-}
-
-.nav a:not(.btn):hover::after,
-.nav a:not(.btn)[aria-current="page"]::after { transform: scaleX(1); }
-
-.nav a[aria-current="page"] { box-shadow: none; }
-
-/* ---------- Cards ---------- */
-
-.card {
-  transition: border-color var(--speed) var(--ease),
-              transform 320ms var(--ease),
-              background 320ms var(--ease);
-}
-
-.js_anim .card:hover { transform: translateY(-5px); }
-
-/* A thin orange edge wipes across the top of a card on hover. */
-.card { position: relative; overflow: hidden; }
-
-.card::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 3px;
-  background: var(--orange);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 340ms var(--ease);
-}
-
-.card:hover::before { transform: scaleX(1); }
-
-.card .more svg { transition: transform 240ms var(--ease); }
-.card:hover .more svg { transform: translateX(5px); }
-
-/* ---------- Buttons ---------- */
-
-.btn { position: relative; overflow: hidden; }
-
-.js_anim .btn:hover { transform: translateY(-2px); }
-.js_anim .btn:active { transform: translateY(0); }
-
-.btn { transition: background var(--speed) var(--ease), color var(--speed) var(--ease),
-                   border-color var(--speed) var(--ease), transform 200ms var(--ease); }
-
-/* ---------- Bento grid ---------- */
-
-.bento {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--s3);
-}
-
-.bento .card { border-radius: 6px; }
-.bento .wide { grid-column: span 2; }
-.bento .tall { grid-row: span 2; }
-
-.bento .feature {
-  grid-column: span 2;
-  grid-row: span 2;
-  background: var(--ink);
-  border-color: var(--ink);
-  color: var(--white);
-  justify-content: space-between;
-}
-
-.bento .feature h3 { color: var(--white); font-size: 1.6rem; }
-.bento .feature p { color: #d4d4d4; font-size: 1.03rem; }
-.bento .feature .icon { color: var(--orange); width: 52px; height: 52px; }
-.bento .feature .more { color: var(--orange); }
-.bento .feature::before { background: var(--orange); }
-.js_anim .bento .feature:hover { transform: translateY(-5px); }
-
-@media (max-width: 1000px) {
-  .bento { grid-template-columns: repeat(2, 1fr); }
-  .bento .feature, .bento .wide { grid-column: span 2; }
-  .bento .feature, .bento .tall { grid-row: auto; }
-}
-
-@media (max-width: 620px) {
-  .bento { grid-template-columns: 1fr; }
-  .bento .feature, .bento .wide { grid-column: auto; }
-}
-
-/* ---------- Marquee ---------- */
-
-.marquee {
-  background: var(--orange);
-  color: var(--ink);
-  overflow: hidden;
-  padding: 15px 0;
-  border-top: 1px solid var(--ink);
-  border-bottom: 1px solid var(--ink);
-}
-
-.marquee .track {
-  display: flex;
-  gap: var(--s5);
-  width: max-content;
-  align-items: center;
-}
-
-.js_anim .marquee .track { animation: slide 38s linear infinite; }
-
-.marquee:hover .track,
-.marquee:focus-within .track { animation-play-state: paused; }
-
-.marquee span {
-  font-family: var(--font-head);
-  font-weight: 700;
-  font-size: 0.95rem;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--s5);
-}
-
-.marquee span::after {
-  content: "";
-  width: 7px;
-  height: 7px;
-  background: var(--ink);
-  border-radius: 50%;
-  flex: 0 0 7px;
-}
-
-@keyframes slide {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-}
-
-/* Pausing a marquee is a WCAG requirement, not a nicety. */
-.marquee_stop {
-  position: absolute;
-  right: var(--s3);
-  top: 50%;
-  transform: translateY(-50%);
-  background: var(--ink);
-  color: var(--white);
-  border: 0;
-  border-radius: 3px;
-  font-family: var(--font-head);
-  font-size: 0.74rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 9px 13px;
-  min-height: 36px;
-  cursor: pointer;
-}
-
-.marquee { position: relative; }
-.marquee.paused .track { animation-play-state: paused !important; }
-
-@media (max-width: 720px) { .marquee_stop { display: none; } }
-
-/* ---------- Step numbers ---------- */
-
-.step { transition: border-top-color 300ms var(--ease); }
-.step:hover { border-top-color: var(--orange); }
-
-.js_anim .step .num {
-  display: inline-block;
-  transition: transform 320ms var(--ease);
-}
-
-.js_anim .step:hover .num { transform: translateY(-4px); }
-
-/* ---------- Track rows ---------- */
-
-.tracks li { transition: background 240ms var(--ease), padding-left 240ms var(--ease); }
-.js_anim .tracks li:hover { background: var(--paper); padding-left: 12px; }
-.section.dark .tracks li:hover { background: var(--ink-soft); }
-
-.tracks .tick { transition: transform 260ms var(--ease); }
-.js_anim .tracks li:hover .tick { transform: scale(1.22); }
-
-/* ---------- Panels and band ---------- */
-
-.panel { transition: transform 320ms var(--ease), border-color 320ms var(--ease); }
-.js_anim .panel:hover { transform: translateY(-4px); }
-
-.band { position: relative; overflow: hidden; }
-
-.band::after {
-  content: "";
-  position: absolute;
-  left: -120px;
-  bottom: -160px;
-  width: 420px;
-  height: 420px;
-  border: 40px solid rgba(10, 10, 10, 0.07);
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.js_anim .band::after { animation: drift 26s ease-in-out infinite alternate; }
-
-/* ---------- Routed page transition, preview only ---------- */
-
-.js_anim .routed:not([hidden]) {
-  animation: pagein 380ms var(--ease);
-}
-
-@keyframes pagein {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: none; }
-}
-
-/* ---------- Reduced motion, belt and braces ----------
-   The script already withholds .js_anim, so these rules should never be
-   needed. They are here in case the class is ever added by other means. */
+@keyframes pagein { from { opacity: 0; } to { opacity: 1; } }
 
 @media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
   .js_anim .reveal,
   .js_anim .stagger > *,
-  .js_anim .hero .enter {
-    opacity: 1 !important;
-    transform: none !important;
-    animation: none !important;
-    transition: none !important;
-  }
-  .js_anim .marquee .track,
-  .js_anim .hero::after,
-  .js_anim .band::after { animation: none !important; }
+  .js_anim .hero .enter { opacity: 1 !important; transform: none !important; }
 }
 
-
-.previewbar {
-  background: #171717;
-  color: #d4d4d4;
-  font-family: var(--font-body);
-  font-size: 0.87rem;
-  text-align: center;
-  padding: 10px 16px;
-  border-bottom: 1px solid #262626;
-}
-.routed[hidden] { display: none; }
 
 </style>
 </head>
 <body>
 
 <a class="skiplink" href="#main">Skip to main content</a>
-<div class="previewbar">This is a single file preview of the five page site. Every link, menu and form on it works. The contact form is live and will send a real message.</div>
+<div class="previewbar">Single file preview of the five page site. The contact form is live and sends a real message.</div>
 
 <header class="masthead">
   <div class="wrap">
     <a class="brand" href="#/index">
-      <svg class="mark" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M2 27 16 5l14 22" stroke="#ff6a00" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.4 27 16 15l7.6 12" stroke="#ffffff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <span>Rafter<em>.</em></span>
+      <svg class="mark" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M2 27 16 5l14 22" stroke="#ff6a00" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.4 27 16 15l7.6 12" stroke="#1d1d1f" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Rafter</span>
     </a>
     <button class="navtoggle" type="button" aria-expanded="false" aria-controls="sitenav">
       <span class="visually_hidden">Open menu</span>
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 8h16M4 16h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
     </button>
     <nav class="nav" id="sitenav" aria-label="Main">
-      <a href="#/index" data_route="index">Home</a>
       <a href="#/training" data_route="training">Training</a>
       <a href="#/resume" data_route="resume">Resume and Support</a>
       <a href="#/services" data_route="services">IT Services</a>
-      <a href="#/contact" data_route="contact" class="btn primary">Talk to us</a>
+      <a href="#/contact" data_route="contact" class="pill">Contact</a>
     </nav>
   </div>
 </header>
@@ -1126,216 +777,110 @@ summary:focus-visible {
 <main id="main">
 <div class="routed" id="page_index" role="region" aria-label="Home">
 
-  <section class="hero">
+  <section class="hero dark">
     <div class="wrap">
-      <span class="eyebrow enter">Rafter Technologies</span>
-      <h1 class="enter">Training that makes you ready for the <em>actual job</em>, not just the syllabus.</h1>
-      <p class="lede enter">Most people finish a course and still freeze on day one, because nobody showed them how the work really happens. We train you on real projects, the way the industry runs them, one to one, across IT and non IT domains.</p>
-
-      <ul class="tagstrip enter">
-        <li>Software Development</li>
-        <li>Cyber Security</li>
-        <li>Electrical</li>
-        <li>Mechanical</li>
-        <li>Testing</li>
-        <li>Cloud and DevOps</li>
-        <li>Data</li>
-      </ul>
-
-      <div class="btnrow enter">
-        <a class="btn primary" href="#/contact">Book a free consultation</a>
-        <a class="btn ghost" href="#/training">See training domains</a>
+      <h1 class="enter">Learn the work.<br><em>Get the job.</em></h1>
+      <p class="sub enter">One to one, project based training for IT and core engineering roles. Resume writing and job support when you need them.</p>
+      <div class="actions enter">
+        <a class="btn" href="#/contact">Talk to us</a>
+        <a class="more" href="#/training">Explore training</a>
       </div>
-
-      <div class="herofoot enter">
-        <div><strong>Project based</strong><span>You work on real deliverables, not slides</span></div>
-        <div><strong>One to one</strong><span>Every session is personal, never a crowded batch</span></div>
-        <div><strong>IT and non IT</strong><span>Engineering domains included, not only software</span></div>
-        <div><strong>Beyond training</strong><span>Resume, interview and job support continue after</span></div>
-      </div>
-    </div>
-  </section>
-
-
-  <div class="marquee" role="group" aria-label="Domains we train">
-    <div class="track">
-      <span>Software Development</span><span>Cyber Security</span><span>Electrical Engineering</span><span>Mechanical Engineering</span><span>Cloud and DevOps</span><span>Testing and Quality</span><span>Data and Analytics</span><span>Web Development</span><span>Resume Writing</span><span>Job Support</span>
-    </div>
-  </div>
-  <section class="section">
-    <div class="wrap">
-      <span class="eyebrow reveal">What we do</span>
-      <h2 class="reveal">Four ways we move your career forward.</h2>
-      <p class="lede reveal" style="margin-bottom:var(--s5)">We are not only a training company. We stay involved from the first lesson through the interview and into the job itself.</p>
-
-      <div class="bento stagger">
-
-        <article class="card feature">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M12 3 2 8l10 5 10-5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
-            <path d="M5 10.5V16c0 1.7 3.1 3 7 3s7-1.3 7-3v-5.5M21 8.6v5.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          </svg>
-          <h3>Job oriented training</h3>
-          <p>Project driven learning built around what the role actually asks of you on a normal working day.</p>
-          <a class="more" href="#/training">Explore domains
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
-        </article>
-
-        <article class="card">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
-            <path d="M14 3v5h5M9 13h6M9 17h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          </svg>
-          <h3>ATS friendly resume</h3>
-          <p>A resume written to clear automated screening and to read well when a human finally opens it.</p>
-          <a class="more" href="#/resume">See resume service
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
-        </article>
-
-        <article class="card">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-            <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.6"/>
-            <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13A4 4 0 0 1 16 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          </svg>
-          <h3>Job support</h3>
-          <p>Once you are placed, we stay reachable. Real help with real tasks while you settle into the role.</p>
-          <a class="more" href="#/resume/support">How support works
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
-        </article>
-
-        <article class="card wide">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <rect x="2.5" y="4" width="19" height="13" rx="2" stroke="currentColor" stroke-width="1.6"/>
-            <path d="M8 20h8M12 17v3M7 9l-2 2 2 2M15 9l2 2-2 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <h3>IT services</h3>
-          <p>For companies. Web development, software delivery and cyber security handled by our own team.</p>
-          <a class="more" href="#/services">View services
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
-        </article>
-
-      </div>
-    </div>
-  </section>
-
-  <section class="section dark">
-    <div class="wrap">
-      <div class="split">
-        <div class="reveal from_left">
-          <span class="eyebrow">Why we are different</span>
-          <h2>Experience is the thing nobody will give you. So we build it first.</h2>
-          <p class="lede">Every fresher runs into the same wall. The job wants experience, and no job will give you the experience. We close that gap by putting you inside the work before you ever sit in an interview.</p>
-          <div class="btnrow" style="margin-top:var(--s4)">
-            <a class="btn primary" href="#/contact">Start with a free call</a>
-          </div>
-        </div>
-
-        <div class="grid stagger" style="gap:var(--s3)">
-          <article class="card">
-            <h3>You build, you do not just watch</h3>
-            <p>Training runs on live projects with requirements, reviews, deadlines and corrections, exactly like a delivery team.</p>
-          </article>
-          <article class="card">
-            <h3>You learn how a company actually works</h3>
-            <p>Standups, documentation, version control, escalation, reporting and handover. The habits that decide whether you last in a role.</p>
-          </article>
-          <article class="card">
-            <h3>You get a trainer, not a playlist</h3>
-            <p>One to one sessions paced to you. Ask anything as many times as you need without holding up a batch of fifty people.</p>
-          </article>
-        </div>
-      </div>
+      <p class="fields enter">Software · Cyber Security · Cloud and DevOps · Testing · Data · Electrical · Mechanical</p>
     </div>
   </section>
 
   <section class="section">
     <div class="wrap">
-      <span class="eyebrow reveal">Every domain, not one</span>
-      <h2 class="reveal">We train across IT and non IT.</h2>
-      <p class="lede reveal" style="margin-bottom:var(--s5)">A mechanical engineer and a security analyst need very different training, and both deserve it done properly. We run separate tracks with trainers who have actually worked in that field.</p>
-
-      <div class="split">
-        <div class="reveal from_left">
-          <h3 style="color:var(--orange-text)">Information technology</h3>
-          <ul class="tracks reveal">
-            <li><svg class="tick" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Software and web development</strong><br><span>Front end, back end, full stack and databases</span></div></li>
-            <li><svg class="tick" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Cyber security</strong><br><span>Security operations, assessment and defensive practice</span></div></li>
-            <li><svg class="tick" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Cloud and DevOps</strong><br><span>Deployment, pipelines, monitoring and infrastructure</span></div></li>
-            <li><svg class="tick" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Testing and quality</strong><br><span>Manual and automation testing on live builds</span></div></li>
-            <li><svg class="tick" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Data and analytics</strong><br><span>Reporting, dashboards and working with real datasets</span></div></li>
-          </ul>
-        </div>
-
-        <div>
-          <h3 style="color:var(--orange-text)">Core engineering and non IT</h3>
-          <ul class="tracks reveal">
-            <li><svg class="tick" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Electrical engineering</strong><br><span>Design practice, drawings, standards and site reality</span></div></li>
-            <li><svg class="tick" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Mechanical engineering</strong><br><span>Design, drafting, documentation and production flow</span></div></li>
-            <li><svg class="tick" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Design and drafting</strong><br><span>Industry tools and the drawing standards teams expect</span></div></li>
-            <li><svg class="tick" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Operations and support roles</strong><br><span>Process, coordination and reporting for business teams</span></div></li>
-            <li><svg class="tick" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Ask for your field</strong><br><span>If your domain is not listed, talk to us and we will tell you honestly whether we can train it</span></div></li>
-          </ul>
-        </div>
+      <div class="head center reveal">
+        <h2>Four ways we help.</h2>
+        <p class="sub">From the first lesson to the first months in the role.</p>
       </div>
 
-      <div class="btnrow" style="margin-top:var(--s5)">
-        <a class="btn line" href="#/training">See how each track runs</a>
+      <div class="tiles stagger">
+        <article class="tile wide dark">
+          <span class="label">Training</span>
+          <h3>Real projects, one to one.</h3>
+          <p>You work on live projects the way an industry team runs them, with a trainer who works only with you.</p>
+          <a class="more" href="#/training">Explore training</a>
+        </article>
+        <article class="tile">
+          <span class="label">Resume</span>
+          <h3>An ATS friendly resume.</h3>
+          <p>Written to pass screening software and to read well to the recruiter who opens it.</p>
+          <a class="more" href="#/resume">See resume writing</a>
+        </article>
+        <article class="tile">
+          <span class="label">Job support</span>
+          <h3>Help after you join.</h3>
+          <p>Guidance on real tasks while you settle into a new role.</p>
+          <a class="more" href="#/resume/support">See job support</a>
+        </article>
+        <article class="tile wide">
+          <span class="label">For companies</span>
+          <h3>Web, software and cyber security.</h3>
+          <p>Our delivery team builds and secures products for businesses.</p>
+          <a class="more" href="#/services">See IT services</a>
+        </article>
       </div>
     </div>
   </section>
 
-  <section class="section paper">
+  <section class="section mist">
     <div class="wrap">
-      <span class="eyebrow reveal">How it works</span>
-      <h2 class="reveal">Four steps from where you are to where you want to be.</h2>
-      <div class="grid g4 stagger" style="margin-top:var(--s5)">
-        <div class="step"><span class="num">01</span><h3>We talk first</h3><p>A free conversation about your background, your target role and what is realistically missing right now.</p></div>
-        <div class="step"><span class="num">02</span><h3>We plan your track</h3><p>You get a plan built for your domain and your pace, with clear outcomes rather than a fixed syllabus.</p></div>
-        <div class="step"><span class="num">03</span><h3>You do the work</h3><p>One to one sessions on live projects. You deliver, you get reviewed, you correct. Same loop as a real team.</p></div>
-        <div class="step"><span class="num">04</span><h3>We back you after</h3><p>Resume, interview preparation and job support so the first months in the role go smoothly.</p></div>
+      <div class="head reveal">
+        <h2>Experience, before the first job.</h2>
+        <p class="sub">Most freshers know the subject and have never seen the work. Our training closes that gap.</p>
       </div>
-    </div>
-  </section>
-
-  <section class="band">
-    <div class="wrap inner reveal">
-      <div>
-        <h2>Tell us your target role. We will tell you the honest gap.</h2>
-        <p>No pressure and no obligation. If we are not the right fit for your field, we will say so directly.</p>
-      </div>
-      <div class="btnrow">
-        <a class="btn dark" href="#/contact">Book a free consultation</a>
-      </div>
+      <div class="points stagger">
+          <div><h3>Project based</h3><p>You get requirements and a deadline, deliver the work, and have it reviewed. The same loop a real team follows.</p></div>
+          <div><h3>One to one</h3><p>Every session is you and your trainer. The pace follows your understanding, and you can ask anything twice.</p></div>
+          <div><h3>How industry works</h3><p>Standups, documentation, version control and reporting. The habits a new joiner is expected to have.</p></div>
+        </div>
     </div>
   </section>
 
   <section class="section">
     <div class="wrap">
-      <div class="split">
-        <div class="panel reveal from_left">
-          <span class="eyebrow">For job seekers</span>
-          <h3 style="font-size:1.5rem">You want the first job, or a better one.</h3>
-          <p>Whether you are fresh out of college with no experience at all, or you have been applying for months with nothing coming back, the problem is usually the same. You can answer questions about the subject but not about the work.</p>
-          <p>We fix that first, then make sure your resume and your interviews reflect it.</p>
-          <div class="btnrow" style="margin-top:var(--s3)">
-            <a class="btn line" href="#/training">Training and tracks</a>
-          </div>
-        </div>
+      <div class="head reveal">
+        <h2>IT and non IT.</h2>
+        <p class="sub">Separate tracks for separate fields, each taught by someone who has done the job.</p>
+      </div>
 
-        <div class="panel filled reveal from_right">
-          <span class="eyebrow">For companies</span>
-          <h3 style="font-size:1.5rem">You need the work delivered.</h3>
-          <p>The same team that trains also builds. We take on web development, software projects and cyber security work for businesses that want a dependable partner rather than a rotating vendor.</p>
-          <p>Talk to us about scope and we will come back with a straight answer on fit, timeline and cost.</p>
-          <div class="btnrow" style="margin-top:var(--s3)">
-            <a class="btn primary" href="#/services">IT services</a>
-          </div>
+      <div class="pair">
+        <div class="reveal">
+          <h3 class="group">Information technology</h3>
+          <div class="rows">
+          <div><h3>Software and web development</h3><p>Front end, back end, full stack and databases</p></div>
+          <div><h3>Cyber security</h3><p>Security operations, assessment and defence</p></div>
+          <div><h3>Cloud and DevOps</h3><p>Deployment, pipelines and monitoring</p></div>
+          <div><h3>Testing</h3><p>Manual and automation testing on live builds</p></div>
+          <div><h3>Data and analytics</h3><p>Reporting, dashboards and real datasets</p></div>
         </div>
+        </div>
+        <div class="reveal">
+          <h3 class="group">Core engineering and non IT</h3>
+          <div class="rows">
+          <div><h3>Electrical engineering</h3><p>Design practice, drawings and standards</p></div>
+          <div><h3>Mechanical engineering</h3><p>Design, drafting and production flow</p></div>
+          <div><h3>Design and drafting</h3><p>Industry tools and drawing standards</p></div>
+          <div><h3>Operations and support</h3><p>Process, coordination and reporting</p></div>
+          <div><h3>Another field</h3><p>Tell us yours and we will say honestly whether we can train it</p></div>
+        </div>
+        </div>
+      </div>
+
+      <div class="actions reveal" style="margin-top:40px">
+        <a class="more" href="#/training">See all training tracks</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section flush">
+    <div class="wrap">
+      <div class="closing reveal">
+        <h2>Tell us the role you want.</h2>
+        <p>We will tell you what it takes to get there.</p>
+        <div class="actions"><a class="btn" href="#/contact">Talk to us</a></div>
       </div>
     </div>
   </section>
@@ -1343,403 +888,269 @@ summary:focus-visible {
 </div>
 <div class="routed" id="page_training" role="region" aria-label="Training" hidden>
 
-  <section class="hero" style="padding:var(--s7) 0 var(--s6)">
+  <section class="hero small">
     <div class="wrap">
-      <span class="eyebrow enter">Training</span>
-      <h1 class="enter">Every domain gets a <em>real track</em>, not a recycled syllabus.</h1>
-      <p class="lede enter">We train across information technology and core engineering. A mechanical engineer and a security analyst need completely different preparation, so we do not pretend one course fits both.</p>
-      <div class="btnrow enter">
-        <a class="btn primary" href="#/contact">Ask about your domain</a>
-        <a class="btn ghost" href="#method">How training runs</a>
+      <h1 class="enter">Training built around the job.</h1>
+      <p class="sub enter">Project based and one to one, for IT and core engineering roles.</p>
+      <div class="actions enter">
+        <a class="btn" href="#/contact">Talk to us</a>
+        <a class="more" href="#/training/method">How it works</a>
       </div>
     </div>
   </section>
 
-  <section class="section" id="method">
+  <section class="section mist" id="method">
     <div class="wrap">
-      <span class="eyebrow">The method</span>
-      <h2>Built the way delivery teams actually work.</h2>
-      <p class="lede" style="margin-bottom:var(--s5)">The point is not to finish a course. The point is that on your first week in a job, nothing surprises you.</p>
-
-      <div class="grid g3 stagger">
-        <article class="card">
-          <h3>Live project work</h3>
-          <p>You are given requirements and a deadline, then you deliver. Your work is reviewed, sent back with comments and corrected, exactly like a real team would.</p>
-        </article>
-        <article class="card">
-          <h3>One to one sessions</h3>
-          <p>Your trainer is yours for the session. The pace follows your understanding rather than a batch schedule, and no question is too basic to ask twice.</p>
-        </article>
-        <article class="card">
-          <h3>Industry habits</h3>
-          <p>Version control, documentation, status reporting, standups, escalation and handover. The working habits that decide whether you survive probation.</p>
-        </article>
-        <article class="card">
-          <h3>Trainers from the field</h3>
-          <p>Each track is run by someone who has done the job. Engineering tracks are taught by engineers, not by a generalist reading from a deck.</p>
-        </article>
-        <article class="card">
-          <h3>Honest assessment</h3>
-          <p>You are told clearly where you stand and what is still weak. We would rather tell you the truth early than let you walk into an interview unprepared.</p>
-        </article>
-        <article class="card">
-          <h3>It does not stop at training</h3>
-          <p>Resume writing, interview preparation and job support carry on after the sessions end, so the transition into the role is covered too.</p>
-        </article>
+      <div class="head reveal">
+        <h2>How it works.</h2>
       </div>
+      <div class="points stagger">
+          <div><h3>Live projects</h3><p>You receive requirements and a deadline, then deliver. Your work is reviewed and sent back with comments, as it would be on a real team.</p></div>
+          <div><h3>One to one sessions</h3><p>Your trainer works only with you. There is no batch to keep up with, and no question is too basic to ask.</p></div>
+          <div><h3>Industry habits</h3><p>Version control, documentation, status reports and handover. The working habits that carry you through probation.</p></div>
+          <div><h3>Trainers from the field</h3><p>Each track is taught by someone who has worked in that role. Engineers teach engineering.</p></div>
+          <div><h3>Honest feedback</h3><p>You are told clearly where you stand and what needs work, well before an interview.</p></div>
+          <div><h3>Support after training</h3><p>Resume writing, interview preparation and job support continue once the sessions end.</p></div>
+        </div>
     </div>
   </section>
 
-  <section class="section dark" id="it">
+  <section class="section" id="it">
     <div class="wrap">
-      <span class="eyebrow">Information technology</span>
-      <h2>IT tracks.</h2>
-      <p class="lede" style="margin-bottom:var(--s5)">Each track is built around the tasks the role is actually hired to do.</p>
-
-      <div class="rows" style="border-top-color:var(--ink-line)">
-        <div class="row reveal" style="border-bottom-color:var(--ink-line)">
-          <h3 style="color:var(--orange)">Software and web development</h3>
-          <p style="color:#a3a3a3">Front end, back end and full stack work. You build and ship a working application with a database behind it, handle change requests, and learn to read a codebase you did not write, which is most of the job in reality.</p>
-        </div>
-        <div class="row reveal" style="border-bottom-color:var(--ink-line)">
-          <h3 style="color:var(--orange)">Cyber security</h3>
-          <p style="color:#a3a3a3">Defensive and operational security practice. Monitoring, assessment, hardening, incident handling and reporting, taught with the documentation discipline that security roles are judged on.</p>
-        </div>
-        <div class="row reveal" style="border-bottom-color:var(--ink-line)">
-          <h3 style="color:var(--orange)">Cloud and DevOps</h3>
-          <p style="color:#a3a3a3">Deployment, build pipelines, environments, monitoring and infrastructure. You take an application from a laptop to a running, observable service.</p>
-        </div>
-        <div class="row reveal" style="border-bottom-color:var(--ink-line)">
-          <h3 style="color:var(--orange)">Testing and quality</h3>
-          <p style="color:#a3a3a3">Manual and automation testing against live builds. Writing test cases that hold up, logging defects that developers can act on, and retesting properly.</p>
-        </div>
-        <div class="row reveal" style="border-bottom-color:var(--ink-line)">
-          <h3 style="color:var(--orange)">Data and analytics</h3>
-          <p style="color:#a3a3a3">Working with messy real datasets, building reports and dashboards, and explaining what the numbers mean to someone who is not technical.</p>
-        </div>
+      <div class="head reveal">
+        <h2>IT tracks.</h2>
       </div>
+      <div class="rows reveal">
+          <div><h3>Software and web development</h3><p>Front end, back end and full stack. You build and ship a working application, handle change requests, and learn to read code you did not write.</p></div>
+          <div><h3>Cyber security</h3><p>Monitoring, assessment, hardening and incident handling, with the reporting discipline security roles are judged on.</p></div>
+          <div><h3>Cloud and DevOps</h3><p>Deployment, build pipelines, environments and monitoring. You take an application from a laptop to a running service.</p></div>
+          <div><h3>Testing and quality</h3><p>Manual and automation testing on live builds. Test cases that hold up and defect reports developers can act on.</p></div>
+          <div><h3>Data and analytics</h3><p>Real datasets, reports and dashboards, and explaining the numbers to people who are not technical.</p></div>
+        </div>
     </div>
   </section>
 
-  <section class="section" id="core">
+  <section class="section mist" id="core">
     <div class="wrap">
-      <span class="eyebrow">Core engineering and non IT</span>
-      <h2>Engineering tracks.</h2>
-      <p class="lede" style="margin-bottom:var(--s5)">Core engineering graduates are underserved by most training institutes. We treat these tracks as seriously as the IT ones.</p>
-
-      <div class="rows">
-        <div class="row reveal">
-          <h3 style="color:var(--orange-text)">Electrical engineering</h3>
-          <p>Design practice, load calculation, drawings, standards and documentation, plus what actually happens between a drawing and a site. You finish able to read, produce and defend real drawings.</p>
-        </div>
-        <div class="row reveal">
-          <h3 style="color:var(--orange-text)">Mechanical engineering</h3>
-          <p>Design and drafting, tolerances, material selection, production documentation and the flow from concept to manufacturing. Built around the deliverables a junior engineer is handed in week one.</p>
-        </div>
-        <div class="row reveal">
-          <h3 style="color:var(--orange-text)">Design and drafting</h3>
-          <p>Industry standard tools and the drawing conventions teams expect, with review cycles so you learn to take correction the way a design office runs it.</p>
-        </div>
-        <div class="row reveal">
-          <h3 style="color:var(--orange-text)">Operations and support roles</h3>
-          <p>Process, coordination, reporting and stakeholder communication for business and support functions where the work is organisational rather than technical.</p>
-        </div>
-        <div class="row reveal">
-          <h3 style="color:var(--orange-text)">Your field is not listed</h3>
-          <p>Talk to us anyway. We will tell you honestly whether we have a trainer who has actually worked in that field. If we do not, we will say so rather than take your money.</p>
-        </div>
+      <div class="head reveal">
+        <h2>Engineering and non IT tracks.</h2>
       </div>
+      <div class="rows reveal">
+          <div><h3>Electrical engineering</h3><p>Design practice, load calculation, drawings and standards. You finish able to read and produce real drawings.</p></div>
+          <div><h3>Mechanical engineering</h3><p>Design and drafting, tolerances, materials and production documents, built around what a junior engineer is given in week one.</p></div>
+          <div><h3>Design and drafting</h3><p>Industry standard tools and drawing conventions, with review cycles like a design office.</p></div>
+          <div><h3>Operations and support roles</h3><p>Process, coordination, reporting and communication for business and support functions.</p></div>
+          <div><h3>Another field</h3><p>Ask us. We will tell you honestly whether we have a trainer who has worked in it.</p></div>
+        </div>
     </div>
   </section>
 
-  <section class="section paper">
-    <div class="wrap">
-      <span class="eyebrow reveal">Common questions</span>
-      <h2 class="reveal">Before you ask.</h2>
-      <div class="faq" style="margin-top:var(--s4)">
-        <details class="reveal">
-          <summary>I have zero experience. Is that a problem?</summary>
-          <div class="answer"><p>No. That is exactly who this is built for. The whole reason we train on live projects is so that people with no experience finish with something real to talk about, and with a genuine idea of how the work is done.</p></div>
+  <section class="section">
+    <div class="wrap narrow">
+      <div class="head reveal">
+        <h2>Questions.</h2>
+      </div>
+      <div class="faq reveal">
+        <details>
+          <summary>I have no experience. Can I join?</summary>
+          <div class="answer">Yes. The training is designed for people with no experience. You finish with real project work to talk about and a clear idea of how the job is done.</div>
         </details>
-        <details class="reveal">
-          <summary>Is this a batch or is it really one to one?</summary>
-          <div class="answer"><p>Sessions are one to one. Your trainer works with you alone, so the pace follows you. If something is not clear you can stop and go over it again without holding anyone up.</p></div>
+        <details>
+          <summary>Is it really one to one?</summary>
+          <div class="answer">Yes. Each session is one trainer and one learner, so the pace follows you.</div>
         </details>
-        <details class="reveal">
-          <summary>Do you only train IT people?</summary>
-          <div class="answer"><p>No. We run tracks for electrical, mechanical, design and other non IT roles as well, taught by trainers from those fields. Core engineering is not an afterthought here.</p></div>
+        <details>
+          <summary>Do you train only IT roles?</summary>
+          <div class="answer">No. We also run tracks for electrical, mechanical, design and other non IT roles, taught by trainers from those fields.</div>
         </details>
-        <details class="reveal">
-          <summary>What happens after the training finishes?</summary>
-          <div class="answer"><p>We write your resume, prepare you for interviews and stay available for job support once you are placed. The training is the start of the relationship, not the end of it.</p></div>
+        <details>
+          <summary>What happens after training?</summary>
+          <div class="answer">We help with your resume and interview preparation, and job support is available once you are placed.</div>
         </details>
-        <details class="reveal">
+        <details>
           <summary>How long does a track take?</summary>
-          <div class="answer"><p>It depends on your domain, your starting point and how much time you can give each week. We work that out with you on the first call rather than quoting a fixed number that fits nobody.</p></div>
+          <div class="answer">It depends on your field, your starting point and the time you can give each week. We work that out with you on the first call.</div>
         </details>
       </div>
     </div>
   </section>
 
-  <section class="band">
-    <div class="wrap inner reveal">
-      <div>
-        <h2>Not sure which track fits you?</h2>
-        <p>Tell us your background and the role you want. The first conversation is free and we will give you a straight answer.</p>
+  <section class="section flush">
+    <div class="wrap">
+      <div class="closing reveal">
+        <h2>Find the right track.</h2>
+        <p>Tell us your background and the role you want.</p>
+        <div class="actions"><a class="btn" href="#/contact">Talk to us</a></div>
       </div>
-      <div class="btnrow"><a class="btn dark" href="#/contact">Book a free consultation</a></div>
     </div>
   </section>
 
 </div>
 <div class="routed" id="page_resume" role="region" aria-label="Resume and Support" hidden>
 
-  <section class="hero" style="padding:var(--s7) 0 var(--s6)">
+  <section class="hero small">
     <div class="wrap">
-      <span class="eyebrow enter">Resume, interviews and job support</span>
-      <h1 class="enter">A resume that gets <em>opened</em>, and support that lasts past the offer.</h1>
-      <p class="lede enter">Most resumes are never read by a person. They are filtered by software first, and the good candidate is thrown out for formatting nobody warned them about. We write yours to pass that filter and then to hold up in the room.</p>
-      <div class="btnrow enter">
-        <a class="btn primary" href="#/contact">Get your resume reviewed</a>
-        <a class="btn ghost" href="#support">See job support</a>
+      <h1 class="enter">A resume that gets read.</h1>
+      <p class="sub enter">ATS friendly resume writing, interview preparation and job support.</p>
+      <div class="actions enter">
+        <a class="btn" href="#/contact">Send us your resume</a>
+        <a class="more" href="#/resume/support">Job support</a>
       </div>
     </div>
   </section>
 
-  <section class="section">
+  <section class="section mist">
     <div class="wrap">
-      <span class="eyebrow reveal">Resume writing</span>
-      <h2 class="reveal">Written for the screening software and for the human after it.</h2>
-      <p class="lede reveal" style="margin-bottom:var(--s5)">An applicant tracking system reads your resume before any recruiter does. If the structure confuses it, your application is gone before anyone knows you exist.</p>
-
-      <div class="grid g3 stagger">
-        <article class="card">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.6"/><path d="m20 20-3.6-3.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          </svg>
-          <h3>Clears the ATS filter</h3>
-          <p>Clean structure, standard section headings, parseable formatting and the right keywords drawn from the actual job descriptions you are targeting.</p>
-        </article>
-        <article class="card">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M12 20V10M18 20V4M6 20v-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          </svg>
-          <h3>Leads with outcomes</h3>
-          <p>Responsibilities tell a recruiter nothing. We rewrite your experience around what you produced and what changed because you were there.</p>
-        </article>
-        <article class="card">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M4 5h16M4 12h16M4 19h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          </svg>
-          <h3>Targeted per role</h3>
-          <p>One generic resume sent everywhere is why the calls stop. We build a base and show you exactly how to adjust it for each application.</p>
-        </article>
-        <article class="card">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <rect x="4" y="3" width="16" height="18" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 8h8M8 12h8M8 16h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          </svg>
-          <h3>Fresher friendly</h3>
-          <p>No experience does not mean an empty page. Project work, training deliverables and academic work are positioned so they carry real weight.</p>
-        </article>
-        <article class="card">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M12 2 4 6v6c0 5 3.4 9 8 10 4.6-1 8-5 8-10V6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <h3>Honest content only</h3>
-          <p>We will not invent experience you do not have. We present what is genuinely yours in the strongest accurate way, which is what survives an interview.</p>
-        </article>
-        <article class="card">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M16 3h5v5M21 3l-9 9M10 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <h3>Profile clean up</h3>
-          <p>Your professional profile is checked alongside the resume, because recruiters look there immediately after and a mismatch costs you the call.</p>
-        </article>
+      <div class="head reveal">
+        <h2>Resume writing.</h2>
+        <p class="sub">Screening software reads your resume before any recruiter does. We write for both, so more applications turn into interview calls.</p>
       </div>
+      <div class="points stagger">
+          <div><h3>ATS friendly</h3><p>Clean structure, standard headings and the right keywords from the roles you are applying for.</p></div>
+          <div><h3>Results first</h3><p>Your experience rewritten around what you delivered and what changed because of it.</p></div>
+          <div><h3>Tailored to the role</h3><p>A strong base resume, with clear guidance on adjusting it for each application.</p></div>
+          <div><h3>Built for freshers</h3><p>Projects, training work and academics presented so they carry real weight.</p></div>
+          <div><h3>Honest content</h3><p>We present what is truly yours in the strongest accurate way. Nothing is invented.</p></div>
+          <div><h3>Profile review</h3><p>Your online professional profile checked so it matches your resume.</p></div>
+        </div>
     </div>
   </section>
 
-  <section class="section dark" id="interview">
+  <section class="section black" id="interview">
     <div class="wrap">
-      <div class="split">
-        <div class="reveal from_left">
-          <span class="eyebrow">Interview preparation</span>
-          <h2>The call comes. Now you have to hold the room.</h2>
-          <p class="lede">A good resume only buys you the conversation. What loses most candidates is being unable to talk about their own work with any confidence.</p>
-          <p style="color:#d4d4d4">We run mock interviews for your specific domain, work through the technical questions you will actually face, and rehearse how you explain your projects. Then we tell you plainly what was weak, so you can fix it before it counts.</p>
-        </div>
-        <div class="grid stagger" style="gap:var(--s3)">
-          <article class="card"><h3>Domain specific mocks</h3><p>Practised against the questions your field asks, not a generic list.</p></article>
-          <article class="card"><h3>Explaining your own work</h3><p>You rehearse walking through your projects clearly, which is where most interviews are won or lost.</p></article>
-          <article class="card"><h3>Direct feedback</h3><p>Told exactly what sounded unconvincing while there is still time to change it.</p></article>
-        </div>
+      <div class="head reveal">
+        <h2>Interview preparation.</h2>
+        <p class="sub">Practice for the questions your field asks, and for explaining your own work clearly.</p>
       </div>
+      <div class="points stagger">
+          <div><h3>Mock interviews</h3><p>Run for your specific field and role.</p></div>
+          <div><h3>Your projects, explained</h3><p>Rehearse walking through your work with confidence.</p></div>
+          <div><h3>Direct feedback</h3><p>Know what to fix while there is still time.</p></div>
+        </div>
     </div>
   </section>
 
   <section class="section" id="support">
     <div class="wrap">
-      <span class="eyebrow">Job support</span>
-      <h2>The offer is not the finish line.</h2>
-      <p class="lede" style="margin-bottom:var(--s5)">The first few months in a new role are the hardest, especially in your first job. You are handed real work with real consequences and you cannot ask the same question five times. So ask us instead.</p>
-
-      <div class="grid g4 stagger" style="margin-top:var(--s4)">
-        <div class="step"><span class="num">01</span><h3>Real task help</h3><p>Stuck on something you were assigned at work. We walk through it with you until you can do it yourself.</p></div>
-        <div class="step"><span class="num">02</span><h3>Reachable when needed</h3><p>Support is arranged around your working hours, because a problem at four in the afternoon cannot wait a week.</p></div>
-        <div class="step"><span class="num">03</span><h3>You stay capable</h3><p>We explain the reasoning rather than handing over an answer, so you are genuinely stronger the next time it comes up.</p></div>
-        <div class="step"><span class="num">04</span><h3>Confidential</h3><p>What you bring to a support session stays between you and your trainer. Nothing leaves that conversation.</p></div>
+      <div class="head reveal">
+        <h2>Job support.</h2>
+        <p class="sub">The first months in a new role are the hardest. We stay available while you settle in.</p>
       </div>
-
-      <div class="panel" style="margin-top:var(--s6)">
-        <h3 style="font-size:1.35rem">One thing we will be straight about</h3>
-        <p style="margin-bottom:0">Job support means helping you understand and complete your work so you grow into the role. It does not mean somebody else doing your job while your employer believes it is you. We will not take that on, because it puts your career at risk and we are not willing to do that to you.</p>
+      <div class="rows reveal">
+          <div><h3>Help with real tasks</h3><p>Stuck on something at work? We walk through it with you until you can do it yourself.</p></div>
+          <div><h3>Around your hours</h3><p>Sessions are arranged around your working day.</p></div>
+          <div><h3>You stay capable</h3><p>We explain the reasoning, so you are stronger the next time it comes up.</p></div>
+          <div><h3>Confidential</h3><p>What you share in a session stays between you and your trainer.</p></div>
+        </div>
+      <div class="note reveal">
+        <h3>How we work</h3>
+        <p>Job support means helping you understand and complete your own work so you grow into the role. We do not do the job in your place.</p>
       </div>
     </div>
   </section>
 
-  <section class="band">
-    <div class="wrap inner reveal">
-      <div>
-        <h2>Send us your current resume. We will tell you what is holding it back.</h2>
-        <p>A free review with specific, honest feedback. No template reply.</p>
+  <section class="section flush">
+    <div class="wrap">
+      <div class="closing reveal">
+        <h2>Send us your resume.</h2>
+        <p>We will tell you what is holding it back.</p>
+        <div class="actions"><a class="btn" href="#/contact">Talk to us</a></div>
       </div>
-      <div class="btnrow"><a class="btn dark" href="#/contact">Get a free resume review</a></div>
     </div>
   </section>
 
 </div>
 <div class="routed" id="page_services" role="region" aria-label="IT Services" hidden>
 
-  <section class="hero" style="padding:var(--s7) 0 var(--s6)">
+  <section class="hero small">
     <div class="wrap">
-      <span class="eyebrow enter">For companies</span>
-      <h1 class="enter">The team that teaches the work also <em>does the work</em>.</h1>
-      <p class="lede enter">Rafter Technologies takes on web development, software delivery and cyber security for businesses. Same people, same standards, applied to your project instead of a classroom.</p>
-      <div class="btnrow enter">
-        <a class="btn primary" href="#/contact">Discuss a project</a>
-        <a class="btn ghost" href="#security">Security services</a>
+      <h1 class="enter">We build what we teach.</h1>
+      <p class="sub enter">Web development, software and cyber security services for companies.</p>
+      <div class="actions enter">
+        <a class="btn" href="#/contact">Discuss a project</a>
+        <a class="more" href="#/services/security">Cyber security</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section flush">
+    <div class="wrap">
+      <div class="tiles three stagger">
+        <article class="tile">
+          <span class="label">Web development</span>
+          <h3>Websites and web applications.</h3>
+          <p>Fast, accessible and easy to maintain.</p>
+        </article>
+        <article class="tile">
+          <span class="label">Software</span>
+          <h3>Custom software.</h3>
+          <p>Built around the way your team works, and connected to the tools you already use.</p>
+        </article>
+        <article class="tile">
+          <span class="label">Cyber security</span>
+          <h3>Assessment and hardening.</h3>
+          <p>Clear findings and practical fixes.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section black" id="security">
+    <div class="wrap">
+      <div class="pair">
+        <div class="head reveal">
+          <h2>Security you can act on.</h2>
+          <p class="sub">We assess your systems, explain the risk in business terms, and give you a prioritised list. Then we help you close it.</p>
+        </div>
+        <div class="rows reveal">
+          <div><h3>Security assessment</h3><p>Where you are exposed and how serious it is</p></div>
+          <div><h3>Application security review</h3><p>Your web and software products examined</p></div>
+          <div><h3>Hardening and remediation</h3><p>Practical fixes, applied with your team</p></div>
+          <div><h3>Staff awareness</h3><p>Training for the people who use your systems</p></div>
+        </div>
       </div>
     </div>
   </section>
 
   <section class="section">
     <div class="wrap">
-      <span class="eyebrow reveal">Services</span>
-      <h2 class="reveal">What we deliver.</h2>
-      <p class="lede reveal" style="margin-bottom:var(--s5)">Scoped properly before we start, so you know what you are getting and what it costs.</p>
-
-      <div class="grid g3 stagger">
-        <article class="card">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <rect x="2.5" y="4" width="19" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M2.5 8.5h19M6 6.2h.01M8.4 6.2h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          </svg>
-          <h3>Web development</h3>
-          <p>Business websites, web applications and internal tools. Built to be fast, accessible and maintainable by whoever inherits them after us.</p>
-        </article>
-        <article class="card">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="m8 17-5-5 5-5M16 7l5 5-5 5M14 4l-4 16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <h3>Software development</h3>
-          <p>Custom applications and systems for the workflow you actually run, including integration with the tools your team already depends on.</p>
-        </article>
-        <article class="card">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M12 2 4 6v6c0 5 3.4 9 8 10 4.6-1 8-5 8-10V6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 8v4m0 3.2h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          </svg>
-          <h3>Cyber security</h3>
-          <p>Security assessment, hardening and advisory work, with findings written so that both your engineers and your management can act on them.</p>
-        </article>
-        <article class="card">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
-          </svg>
-          <h3>Maintenance and support</h3>
-          <p>Ongoing care for what is already live. Updates, fixes, monitoring and a person who answers when something breaks.</p>
-        </article>
-        <article class="card">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M3 3v18h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="m7 15 4-5 3 3 4-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <h3>Technical consulting</h3>
-          <p>An outside read on your stack, your architecture or a decision you are stuck on, with a recommendation you can actually act on.</p>
-        </article>
-        <article class="card">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="9.5" cy="7" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M19 8v6M22 11h-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          </svg>
-          <h3>Team training</h3>
-          <p>The training side turned inward. Bring your existing staff up to speed on a technology or a practice, taught the same project driven way.</p>
-        </article>
+      <div class="head reveal">
+        <h2>How we work with you.</h2>
       </div>
-    </div>
-  </section>
-
-  <section class="section dark" id="security">
-    <div class="wrap">
-      <div class="split">
-        <div class="reveal from_left">
-          <span class="eyebrow">Cyber security</span>
-          <h2>Security work that produces decisions, not just a document.</h2>
-          <p class="lede">Plenty of reports get delivered and then sit in a folder because nobody could tell what mattered most or what to do first.</p>
-          <p style="color:#d4d4d4">We assess your systems, explain the risk in terms your business actually cares about, and give you a prioritised list you can work through. Then we help you close the items rather than walking away at the handover.</p>
-          <div class="btnrow" style="margin-top:var(--s4)"><a class="btn primary" href="#/contact">Request an assessment</a></div>
+      <div class="rows reveal">
+          <div><h3>Discovery</h3><p>We listen to the problem and ask the hard questions early.</p></div>
+          <div><h3>Scope and estimate</h3><p>A written scope with timeline and cost before any work starts.</p></div>
+          <div><h3>Build and review</h3><p>Delivered in visible stages, so you can steer.</p></div>
+          <div><h3>Handover and support</h3><p>Documented handover, with maintenance if you want it.</p></div>
         </div>
-        <div>
-          <ul class="tracks reveal">
-            <li><svg class="tick" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Security assessment</strong><br><span>Where you are exposed and how serious each finding really is</span></div></li>
-            <li><svg class="tick" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Application security review</strong><br><span>Your web and software products examined before attackers do it for you</span></div></li>
-            <li><svg class="tick" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Hardening and remediation</strong><br><span>Practical fixes applied, not just recommended</span></div></li>
-            <li><svg class="tick" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Security awareness for staff</strong><br><span>Because most incidents start with a person, not a server</span></div></li>
-            <li><svg class="tick" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Advisory and review</strong><br><span>A second opinion on security decisions before you commit to them</span></div></li>
-          </ul>
-        </div>
-      </div>
     </div>
   </section>
 
-  <section class="section paper">
+  <section class="section flush">
     <div class="wrap">
-      <span class="eyebrow reveal">How we engage</span>
-      <h2 class="reveal">Straightforward, and scoped before anyone commits.</h2>
-      <div class="grid g4 stagger" style="margin-top:var(--s5)">
-        <div class="step"><span class="num">01</span><h3>Discovery</h3><p>We listen to the problem properly and ask the awkward questions early rather than after the contract.</p></div>
-        <div class="step"><span class="num">02</span><h3>Scope and estimate</h3><p>A written scope with timeline and cost. If we think the idea needs changing, we say so before you spend.</p></div>
-        <div class="step"><span class="num">03</span><h3>Build and review</h3><p>Work delivered in visible stages so you can see progress and redirect early instead of at the end.</p></div>
-        <div class="step"><span class="num">04</span><h3>Handover and support</h3><p>Documented handover, and a maintenance arrangement if you want us to stay involved.</p></div>
+      <div class="closing reveal">
+        <h2>Have a project in mind?</h2>
+        <p>Describe it in plain language and we will reply with fit, timeline and cost.</p>
+        <div class="actions"><a class="btn" href="#/contact">Discuss a project</a></div>
       </div>
-    </div>
-  </section>
-
-  <section class="band">
-    <div class="wrap inner reveal">
-      <div>
-        <h2>Have a project, or just a problem you cannot place?</h2>
-        <p>Describe it in plain language. We will come back with an honest view on fit, timeline and cost.</p>
-      </div>
-      <div class="btnrow"><a class="btn dark" href="#/contact">Start a conversation</a></div>
     </div>
   </section>
 
 </div>
 <div class="routed" id="page_contact" role="region" aria-label="Talk to us" hidden>
 
-  <section class="hero" style="padding:var(--s6) 0 var(--s5)">
+  <section class="hero small">
     <div class="wrap">
-      <span class="eyebrow enter">Contact</span>
-      <h1 class="enter">Tell us what you are trying to do.</h1>
-      <p class="lede enter" style="margin-bottom:0">Whether you are looking for training, a resume that finally gets calls, or a delivery partner for your company, start here. The first conversation costs nothing.</p>
+      <h1 class="enter">Talk to us.</h1>
+      <p class="sub enter">Training, resume writing, job support or a project for your company. Tell us what you need.</p>
     </div>
   </section>
 
-  <section class="section">
+  <section class="section flush">
     <div class="wrap">
-      <div class="split" style="grid-template-columns:1.5fr 1fr">
+      <div class="contact">
 
-        <div class="reveal from_left">
-          <h2 style="font-size:1.7rem">Send us a message</h2>
-          <p class="lede">Fields marked with an asterisk are required.</p>
-
+        <div class="reveal">
           <!--
             DELIVERY
             Submissions are posted to FormSubmit, which forwards them to the
@@ -1777,7 +1188,7 @@ summary:focus-visible {
             <div class="field">
               <label for="phone">Phone number</label>
               <input type="tel" id="phone" name="phone" autocomplete="tel" aria-describedby="phonehint">
-              <span class="hint" id="phonehint">Optional. Useful if you would rather we call you.</span>
+              <span class="hint" id="phonehint">Optional</span>
             </div>
 
             <div class="field">
@@ -1796,47 +1207,35 @@ summary:focus-visible {
 
             <div class="field full">
               <label for="domain">Your field or target role</label>
-              <input type="text" id="domain" name="domain" aria-describedby="domainhint" placeholder="For example mechanical design, cyber security, web development">
-              <span class="hint" id="domainhint">Optional, but it helps us route you to the right person straight away.</span>
+              <input type="text" id="domain" name="domain" aria-describedby="domainhint" placeholder="Mechanical design, cyber security, web development">
+              <span class="hint" id="domainhint">Optional</span>
             </div>
 
             <div class="field full">
-              <label for="message">Tell us a bit more <span class="req" aria-hidden="true">*</span></label>
+              <label for="message">Message <span class="req" aria-hidden="true">*</span></label>
               <textarea id="message" name="message" required aria-describedby="messagehint messageerror"></textarea>
-              <span class="hint" id="messagehint">Your background, where you are stuck, or what your company needs built. Plain language is fine.</span>
+              <span class="hint" id="messagehint">Your background, where you are stuck, or what your company needs built.</span>
               <span class="error" id="messageerror"></span>
             </div>
 
             <div class="sent" id="sent" role="status" hidden></div>
 
             <div class="field full">
-              <button class="btn primary" type="submit">Send message</button>
-              <p class="formnote" style="margin:var(--s2) 0 0">We reply to every genuine enquiry. Your details are used only to respond to you.</p>
+              <div><button class="btn" type="submit">Send message</button></div>
+              <p class="formnote">Fields marked * are required. Your details are used only to reply to you.</p>
             </div>
 
           </form>
         </div>
 
-        <aside>
-          <div class="panel filled reveal from_right">
-            <h3 style="font-size:1.25rem">Reach us directly</h3>
-            <ul class="contactlist">
-              <li>
-                <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="m3 6.5 9 6 9-6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                <div><strong>Email</strong><a href="mailto:support@raftertechnologies.com">support@raftertechnologies.com</a></div>
-              </li>
-              <li style="border-bottom:0">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .3 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.4 1.8.6 2.8.7a2 2 0 0 1 1.7 2z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
-                <div><strong>Phone</strong><a href="tel:+918052839537">+91 80528 39537</a></div>
-              </li>
-            </ul>
-          </div>
-
-          <div class="panel" style="margin-top:var(--s3)">
-            <h3 style="font-size:1.1rem">Already have a resume?</h3>
-            <p style="margin-bottom:var(--s2)">Attach it when you write to us and we will send back specific feedback on what is stopping it from getting calls.</p>
-            <a class="more" href="#/resume" style="color:var(--orange-text);text-decoration:none;font-family:var(--font-head);font-weight:600">About the resume service</a>
-          </div>
+        <aside class="direct reveal">
+          <h2>Reach us directly</h2>
+          <dl>
+            <dt>Email</dt>
+            <dd><a href="mailto:support@raftertechnologies.com">support@raftertechnologies.com</a></dd>
+            <dt>Phone</dt>
+            <dd><a href="tel:+918052839537">+91 80528 39537</a></dd>
+          </dl>
         </aside>
 
       </div>
@@ -1851,26 +1250,21 @@ summary:focus-visible {
   <div class="wrap">
     <div class="cols">
       <div class="about">
-        <a class="brand" href="#/index" style="margin-bottom:var(--s2)">
-          <svg class="mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-            <path d="M2 27 16 5l14 22" stroke="#ff6a00" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M8.4 27 16 15l7.6 12" stroke="#ffffff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span>Rafter<em>.</em></span>
+        <a class="brand" href="#/index">
+          <svg class="mark" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M2 27 16 5l14 22" stroke="#ff6a00" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.4 27 16 15l7.6 12" stroke="#1d1d1f" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Rafter</span>
         </a>
-        <p>Project oriented training across IT and non IT domains, resume writing, job support and IT services for companies.</p>
+        <p>Job oriented training, resume writing, job support and IT services.</p>
       </div>
-
       <div>
         <h4>Training</h4>
         <ul>
-          <li><a href="#/training">All domains</a></li>
+          <li><a href="#/training">All tracks</a></li>
           <li><a href="#/training/it">IT tracks</a></li>
           <li><a href="#/training/core">Engineering tracks</a></li>
-          <li><a href="#/training/method">How training runs</a></li>
+          <li><a href="#/training/method">How it works</a></li>
         </ul>
       </div>
-
       <div>
         <h4>Career</h4>
         <ul>
@@ -1879,23 +1273,17 @@ summary:focus-visible {
           <li><a href="#/resume/support">Job support</a></li>
         </ul>
       </div>
-
       <div>
         <h4>Company</h4>
         <ul>
           <li><a href="#/services">IT services</a></li>
-          <li><a href="#/services/security">Cyber security</a></li>
           <li><a href="#/contact">Contact</a></li>
           <li><a href="mailto:support@raftertechnologies.com">support@raftertechnologies.com</a></li>
           <li><a href="tel:+918052839537">+91 80528 39537</a></li>
         </ul>
       </div>
     </div>
-
-    <div class="base">
-      <span>Copyright 2026 Rafter Technologies. All rights reserved.</span>
-      <span>Training, resume services, job support and IT services.</span>
-    </div>
+    <div class="base">Copyright 2026 Rafter Technologies. All rights reserved.</div>
   </div>
 
 </footer>
@@ -1914,7 +1302,7 @@ summary:focus-visible {
   var nav = document.getElementById('sitenav');
 
   if (toggle && nav) {
-    var mq = window.matchMedia('(max-width: 900px)');
+    var mq = window.matchMedia('(max-width: 820px)');
 
     function applyState() {
       if (mq.matches) {
@@ -2104,81 +1492,19 @@ summary:focus-visible {
 })();
 
 /* Rafter Technologies
-   Motion layer. Scroll reveals, header state, marquee control.
+   Motion layer. Content settles into place once as it scrolls into view,
+   and the header gains a hairline once the page has moved. Nothing loops.
 
    The gate below is the important part. The resting state of a revealed
    element is invisible, so the .js_anim class that switches those rules on
-   is only ever added when JavaScript is running AND the visitor has not
-   asked for reduced motion. No JavaScript, or reduced motion on, and the
-   site renders as plain static content with everything visible. */
+   is only added when JavaScript is running AND the visitor has not asked
+   for reduced motion. Otherwise the site renders as plain static content
+   with everything visible. */
 
 (function () {
   'use strict';
 
-  var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
-  var allowed = !(calm && calm.matches);
-
-  if (!allowed) { return; }
-  document.documentElement.classList.add('js_anim');
-
-  /* If the visitor turns reduced motion on while the page is open, drop the
-     whole motion layer rather than leaving half animated elements behind. */
-  if (calm && calm.addEventListener) {
-    calm.addEventListener('change', function (e) {
-      if (e.matches) {
-        document.documentElement.classList.remove('js_anim');
-        document.querySelectorAll('.reveal, .stagger').forEach(function (el) {
-          el.classList.add('seen');
-        });
-      }
-    });
-  }
-
-  /* ----- Scroll reveal ----- */
-
-  function collect(root) {
-    return (root || document).querySelectorAll('.reveal:not(.seen), .stagger:not(.seen)');
-  }
-
-  var observer = null;
-
-  if ('IntersectionObserver' in window) {
-    observer = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) { return; }
-        entry.target.classList.add('seen');
-        observer.unobserve(entry.target);
-      });
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.06 });
-  }
-
-  function watch(root) {
-    var items = collect(root);
-    items.forEach(function (el) {
-      /* Stagger children 40ms apart. The motion guidance caps this well
-         below the point where a long row starts to drag. */
-      if (el.classList.contains('stagger')) {
-        Array.prototype.slice.call(el.children).forEach(function (child, i) {
-          child.style.transitionDelay = Math.min(i * 40, 400) + 'ms';
-        });
-      }
-      if (observer) {
-        observer.observe(el);
-      } else {
-        el.classList.add('seen');
-      }
-    });
-  }
-
-  watch(document);
-
-  /* The preview build swaps pages in and out, so anything revealed inside a
-     newly shown page needs observing again. */
-  window.addEventListener('hashchange', function () {
-    window.setTimeout(function () { watch(document); }, 40);
-  });
-
-  /* ----- Header state on scroll ----- */
+  /* ----- Header hairline on scroll ----- */
 
   var masthead = document.querySelector('.masthead');
   if (masthead) {
@@ -2187,7 +1513,7 @@ summary:focus-visible {
       if (ticking) { return; }
       ticking = true;
       window.requestAnimationFrame(function () {
-        masthead.classList.toggle('stuck', window.scrollY > 24);
+        masthead.classList.toggle('stuck', window.scrollY > 8);
         ticking = false;
       });
     };
@@ -2195,34 +1521,55 @@ summary:focus-visible {
     onScroll();
   }
 
-  /* ----- Marquee -----
-     Moving content needs a way to stop it. That is a requirement, not a
-     nicety, so the strip gets a real button rather than hover alone. */
+  /* ----- Reveals ----- */
 
-  document.querySelectorAll('.marquee').forEach(function (strip) {
-    var track = strip.querySelector('.track');
-    if (!track) { return; }
+  var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (calm && calm.matches) { return; }
 
-    /* Duplicate the run once so the loop has something to scroll into. The
-       copy is hidden from assistive tech, which should read the list once. */
-    var copy = track.cloneNode(true);
-    copy.setAttribute('aria-hidden', 'true');
-    Array.prototype.slice.call(copy.children).forEach(function (c) {
-      c.setAttribute('aria-hidden', 'true');
+  var root = document.documentElement;
+  root.classList.add('js_anim');
+
+  function showAll() {
+    document.querySelectorAll('.reveal, .stagger').forEach(function (el) {
+      el.classList.add('seen');
     });
-    while (copy.firstChild) { track.appendChild(copy.firstChild); }
+  }
 
-    var stop = document.createElement('button');
-    stop.type = 'button';
-    stop.className = 'marquee_stop';
-    stop.textContent = 'Pause';
-    stop.setAttribute('aria-pressed', 'false');
-    stop.addEventListener('click', function () {
-      var paused = strip.classList.toggle('paused');
-      stop.textContent = paused ? 'Play' : 'Pause';
-      stop.setAttribute('aria-pressed', String(paused));
+  /* If reduced motion is switched on while the page is open, drop the whole
+     layer and show everything. */
+  if (calm && calm.addEventListener) {
+    calm.addEventListener('change', function (e) {
+      if (e.matches) { root.classList.remove('js_anim'); showAll(); }
     });
-    strip.appendChild(stop);
+  }
+
+  if (!('IntersectionObserver' in window)) { showAll(); return; }
+
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (!entry.isIntersecting) { return; }
+      entry.target.classList.add('seen');
+      observer.unobserve(entry.target);
+    });
+  }, { rootMargin: '0px 0px -6% 0px', threshold: 0.05 });
+
+  function watch() {
+    document.querySelectorAll('.reveal:not(.seen), .stagger:not(.seen)').forEach(function (el) {
+      if (el.classList.contains('stagger')) {
+        Array.prototype.slice.call(el.children).forEach(function (child, i) {
+          child.style.transitionDelay = Math.min(i * 70, 350) + 'ms';
+        });
+      }
+      observer.observe(el);
+    });
+  }
+
+  watch();
+
+  /* The single file preview swaps pages in and out, so a newly shown page
+     needs observing again. */
+  window.addEventListener('hashchange', function () {
+    window.setTimeout(watch, 40);
   });
 
 })();
@@ -2250,7 +1597,7 @@ summary:focus-visible {
       }
     });
 
-    var titles = {"index": "Rafter Technologies | Job Oriented Training, Resume and IT Services", "training": "Training Domains | Rafter Technologies", "resume": "Resume Writing, Interview Preparation and Job Support | Rafter Technologies", "services": "IT Services for Companies | Rafter Technologies", "contact": "Contact Rafter Technologies"};
+    var titles = {"index": "Rafter Technologies | Job Oriented Training, Resume and IT Services", "training": "Training | Rafter Technologies", "resume": "Resume Writing and Job Support | Rafter Technologies", "services": "IT Services for Companies | Rafter Technologies", "contact": "Contact | Rafter Technologies"};
     document.title = titles[name] || 'Rafter Technologies';
 
     if (anchor) {
@@ -2264,6 +1611,7 @@ summary:focus-visible {
   }
 
   function route() {
+    if (location.hash && location.hash.indexOf('#/') !== 0) { return; }
     var raw = (location.hash || '#/index').replace(/^#\//, '');
     var bits = raw.split('/');
     show(bits[0] || 'index', bits[1]);

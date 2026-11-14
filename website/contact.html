@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Contact Rafter Technologies</title>
-<meta name="description" content="Talk to Rafter Technologies about job oriented training, resume writing, job support or IT services for your company. The first consultation is free.">
+<title>Contact | Rafter Technologies</title>
+<meta name="description" content="Talk to Rafter Technologies about job oriented training, resume writing, job support or IT services for your company.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="assets/css/styles.css">
@@ -16,44 +16,36 @@
 <header class="masthead">
   <div class="wrap">
     <a class="brand" href="index.html">
-      <svg class="mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-        <path d="M2 27 16 5l14 22" stroke="#ff6a00" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M8.4 27 16 15l7.6 12" stroke="#ffffff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <span>Rafter<em>.</em></span>
+      <svg class="mark" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M2 27 16 5l14 22" stroke="#ff6a00" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.4 27 16 15l7.6 12" stroke="#1d1d1f" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Rafter</span>
     </a>
     <button class="navtoggle" type="button" aria-expanded="false" aria-controls="sitenav">
       <span class="visually_hidden">Open menu</span>
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 8h16M4 16h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
     </button>
     <nav class="nav" id="sitenav" aria-label="Main">
-      <a href="index.html">Home</a>
       <a href="training.html">Training</a>
       <a href="resume.html">Resume and Support</a>
       <a href="services.html">IT Services</a>
-      <a href="contact.html" class="btn primary" aria-current="page">Talk to us</a>
+      <a href="contact.html" class="pill" aria-current="page">Contact</a>
     </nav>
   </div>
 </header>
 
 <main id="main">
 
-  <section class="hero" style="padding:var(--s6) 0 var(--s5)">
+  <section class="hero small">
     <div class="wrap">
-      <span class="eyebrow enter">Contact</span>
-      <h1 class="enter">Tell us what you are trying to do.</h1>
-      <p class="lede enter" style="margin-bottom:0">Whether you are looking for training, a resume that finally gets calls, or a delivery partner for your company, start here. The first conversation costs nothing.</p>
+      <h1 class="enter">Talk to us.</h1>
+      <p class="sub enter">Training, resume writing, job support or a project for your company. Tell us what you need.</p>
     </div>
   </section>
 
-  <section class="section">
+  <section class="section flush">
     <div class="wrap">
-      <div class="split" style="grid-template-columns:1.5fr 1fr">
+      <div class="contact">
 
-        <div class="reveal from_left">
-          <h2 style="font-size:1.7rem">Send us a message</h2>
-          <p class="lede">Fields marked with an asterisk are required.</p>
-
+        <div class="reveal">
           <!--
             DELIVERY
             Submissions are posted to FormSubmit, which forwards them to the
@@ -91,7 +83,7 @@
             <div class="field">
               <label for="phone">Phone number</label>
               <input type="tel" id="phone" name="phone" autocomplete="tel" aria-describedby="phonehint">
-              <span class="hint" id="phonehint">Optional. Useful if you would rather we call you.</span>
+              <span class="hint" id="phonehint">Optional</span>
             </div>
 
             <div class="field">
@@ -110,47 +102,35 @@
 
             <div class="field full">
               <label for="domain">Your field or target role</label>
-              <input type="text" id="domain" name="domain" aria-describedby="domainhint" placeholder="For example mechanical design, cyber security, web development">
-              <span class="hint" id="domainhint">Optional, but it helps us route you to the right person straight away.</span>
+              <input type="text" id="domain" name="domain" aria-describedby="domainhint" placeholder="Mechanical design, cyber security, web development">
+              <span class="hint" id="domainhint">Optional</span>
             </div>
 
             <div class="field full">
-              <label for="message">Tell us a bit more <span class="req" aria-hidden="true">*</span></label>
+              <label for="message">Message <span class="req" aria-hidden="true">*</span></label>
               <textarea id="message" name="message" required aria-describedby="messagehint messageerror"></textarea>
-              <span class="hint" id="messagehint">Your background, where you are stuck, or what your company needs built. Plain language is fine.</span>
+              <span class="hint" id="messagehint">Your background, where you are stuck, or what your company needs built.</span>
               <span class="error" id="messageerror"></span>
             </div>
 
             <div class="sent" id="sent" role="status" hidden></div>
 
             <div class="field full">
-              <button class="btn primary" type="submit">Send message</button>
-              <p class="formnote" style="margin:var(--s2) 0 0">We reply to every genuine enquiry. Your details are used only to respond to you.</p>
+              <div><button class="btn" type="submit">Send message</button></div>
+              <p class="formnote">Fields marked * are required. Your details are used only to reply to you.</p>
             </div>
 
           </form>
         </div>
 
-        <aside>
-          <div class="panel filled reveal from_right">
-            <h3 style="font-size:1.25rem">Reach us directly</h3>
-            <ul class="contactlist">
-              <li>
-                <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="m3 6.5 9 6 9-6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                <div><strong>Email</strong><a href="mailto:support@raftertechnologies.com">support@raftertechnologies.com</a></div>
-              </li>
-              <li style="border-bottom:0">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .3 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.4 1.8.6 2.8.7a2 2 0 0 1 1.7 2z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
-                <div><strong>Phone</strong><a href="tel:+918052839537">+91 80528 39537</a></div>
-              </li>
-            </ul>
-          </div>
-
-          <div class="panel" style="margin-top:var(--s3)">
-            <h3 style="font-size:1.1rem">Already have a resume?</h3>
-            <p style="margin-bottom:var(--s2)">Attach it when you write to us and we will send back specific feedback on what is stopping it from getting calls.</p>
-            <a class="more" href="resume.html" style="color:var(--orange-text);text-decoration:none;font-family:var(--font-head);font-weight:600">About the resume service</a>
-          </div>
+        <aside class="direct reveal">
+          <h2>Reach us directly</h2>
+          <dl>
+            <dt>Email</dt>
+            <dd><a href="mailto:support@raftertechnologies.com">support@raftertechnologies.com</a></dd>
+            <dt>Phone</dt>
+            <dd><a href="tel:+918052839537">+91 80528 39537</a></dd>
+          </dl>
         </aside>
 
       </div>
@@ -163,38 +143,40 @@
   <div class="wrap">
     <div class="cols">
       <div class="about">
-        <a class="brand" href="index.html" style="margin-bottom:var(--s2)">
-          <svg class="mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-            <path d="M2 27 16 5l14 22" stroke="#ff6a00" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M8.4 27 16 15l7.6 12" stroke="#ffffff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span>Rafter<em>.</em></span>
+        <a class="brand" href="index.html">
+          <svg class="mark" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M2 27 16 5l14 22" stroke="#ff6a00" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.4 27 16 15l7.6 12" stroke="#1d1d1f" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Rafter</span>
         </a>
-        <p>Project oriented training across IT and non IT domains, resume writing, job support and IT services for companies.</p>
+        <p>Job oriented training, resume writing, job support and IT services.</p>
       </div>
-      <div><h4>Training</h4><ul>
-        <li><a href="training.html">All domains</a></li>
-        <li><a href="training.html#it">IT tracks</a></li>
-        <li><a href="training.html#core">Engineering tracks</a></li>
-        <li><a href="training.html#method">How training runs</a></li>
-      </ul></div>
-      <div><h4>Career</h4><ul>
-        <li><a href="resume.html">Resume writing</a></li>
-        <li><a href="resume.html#interview">Interview preparation</a></li>
-        <li><a href="resume.html#support">Job support</a></li>
-      </ul></div>
-      <div><h4>Company</h4><ul>
-        <li><a href="services.html">IT services</a></li>
-        <li><a href="services.html#security">Cyber security</a></li>
-        <li><a href="contact.html">Contact</a></li>
-        <li><a href="mailto:support@raftertechnologies.com">support@raftertechnologies.com</a></li>
-        <li><a href="tel:+918052839537">+91 80528 39537</a></li>
-      </ul></div>
+      <div>
+        <h4>Training</h4>
+        <ul>
+          <li><a href="training.html">All tracks</a></li>
+          <li><a href="training.html#it">IT tracks</a></li>
+          <li><a href="training.html#core">Engineering tracks</a></li>
+          <li><a href="training.html#method">How it works</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Career</h4>
+        <ul>
+          <li><a href="resume.html">Resume writing</a></li>
+          <li><a href="resume.html#interview">Interview preparation</a></li>
+          <li><a href="resume.html#support">Job support</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="services.html">IT services</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="mailto:support@raftertechnologies.com">support@raftertechnologies.com</a></li>
+          <li><a href="tel:+918052839537">+91 80528 39537</a></li>
+        </ul>
+      </div>
     </div>
-    <div class="base">
-      <span>Copyright 2026 Rafter Technologies. All rights reserved.</span>
-      <span>Training, resume services, job support and IT services.</span>
-    </div>
+    <div class="base">Copyright 2026 Rafter Technologies. All rights reserved.</div>
   </div>
 </footer>
 

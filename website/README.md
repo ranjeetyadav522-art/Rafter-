@@ -81,30 +81,49 @@ added later, they belong in the `contactlist` block in `contact.html`.
 
 ## Design system
 
+Minimal, in the spirit of Apple's marketing pages: large quiet type, a lot of
+white space, rounded tiles, almost no borders, and one accent colour used
+sparingly. Direction came from the ui-ux-pro-max skill ("Minimalism and Swiss
+Style", low variance, subtle motion, spacious density).
+
 | Token | Value | Use |
 |---|---|---|
-| Ink | `#0a0a0a` | Body text on white, dark section backgrounds |
-| White | `#ffffff` | Light backgrounds, text on ink |
-| Brand orange | `#ff6a00` | Button fills, accents on dark backgrounds |
-| Deep orange | `#c2410c` | Orange **text** on white backgrounds only |
-| Slate | `#525252` | Secondary text |
+| Ink | `#1d1d1f` | Text on light surfaces, dark pill buttons |
+| Black | `#000000` | Home hero, dark tiles, dark sections |
+| Mist | `#f5f5f7` | Alternate section background, tiles, footer |
+| Grey | `#6e6e73` | Secondary text on light |
+| Accent | `#ff6a00` | Buttons, and links and accents on black |
+| Accent text | `#b93d0a` | Orange links on white or mist |
 
-Two oranges exist on purpose. The bright brand orange measures only 2.87:1
-against white, which fails the WCAG AA minimum of 4.5:1, so it is never used
-for text on a light background. Where orange text sits on white, the deeper
-`#c2410c` is used instead at 5.18:1. Ink on brand orange measures 6.90:1,
-which is why every orange button uses black text rather than white.
+Two oranges exist on purpose. The bright brand orange measures 2.87:1 on
+white, which fails WCAG AA, so it never carries text on a light surface.
+Links there use the deeper `#b93d0a` at 5.16:1. Buttons carry ink text on
+orange at 5.86:1.
 
-Fonts are Lexend for headings and Source Sans 3 for body, loaded from Google
-Fonts. To self host them, download both families into `assets/fonts/` and
-replace the `@import` at the top of `styles.css`.
+Type is the system font stack, so Apple devices render San Francisco, with
+Inter loaded from Google Fonts for everything else.
+
+What was removed to get here, and should stay out: uppercase orange eyebrow
+labels above every heading, icon plus heading plus paragraph card grids,
+numbered step blocks, pill tag strips, the marquee, decorative background
+shapes, and hover effects on every surface.
+
+## Motion
+
+Quiet by design. Content fades up once as it scrolls into view, the hero
+settles on load, and the header gains a hairline after the first scroll.
+Nothing loops and nothing moves on hover apart from link chevrons.
+
+The reveal rules sit behind a `js_anim` class that the script adds only when
+JavaScript runs and the visitor has not asked for reduced motion, so with
+either of those the page renders fully visible and static.
 
 ## Accessibility
 
-Built against WCAG 2.1 AA. Implemented: skip link, visible focus rings on
-every interactive element, 48px minimum control height, labelled form fields
-with inline errors plus a focusable error summary, keyboard operable mobile
-navigation that closes on Escape, and `prefers-reduced-motion` support.
+Built against WCAG 2.1 AA: skip link, visible focus rings, controls at least
+44px tall, labelled form fields with inline errors and a focusable error
+summary, keyboard operable mobile menu that closes on Escape, and
+`prefers-reduced-motion` support.
 
 ## House style
 

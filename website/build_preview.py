@@ -73,6 +73,8 @@ def build():
     sections = []
     for name, _ in PAGES:
         body = rewrite_links(main_of(sources[name]))
+        # links to a section of the same page go through the router too
+        body = re.sub(r'href="#([A-Za-z0-9_]+)"', 'href="#/%s/\\1"' % name, body)
         hidden = "" if name == "index" else " hidden"
         sections.append(
             '<div class="routed" id="page_{0}" role="region" '
@@ -84,19 +86,20 @@ def build():
     nav = "\n      ".join(
         '<a href="#/{0}" data_route="{0}"{1}>{2}</a>'.format(
             name,
-            ' class="btn primary"' if name == "contact" else "",
-            label,
+            ' class="pill"' if name == "contact" else "",
+            "Contact" if name == "contact" else label,
         )
         for name, label in PAGES
+        if name != "index"
     )
 
     footer = rewrite_links(footer_of(sources["index"]))
 
     brand_mark = (
         '<svg class="mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">'
-        '<path d="M2 27 16 5l14 22" stroke="#ff6a00" stroke-width="3.4" '
+        '<path d="M2 27 16 5l14 22" stroke="#ff6a00" stroke-width="3.6" '
         'stroke-linecap="round" stroke-linejoin="round"/>'
-        '<path d="M8.4 27 16 15l7.6 12" stroke="#ffffff" stroke-width="3.4" '
+        '<path d="M8.4 27 16 15l7.6 12" stroke="#1d1d1f" stroke-width="3.6" '
         'stroke-linecap="round" stroke-linejoin="round"/></svg>'
     )
 
@@ -135,6 +138,7 @@ def build():
   }
 
   function route() {
+    if (location.hash && location.hash.indexOf('#/') !== 0) { return; }
     var raw = (location.hash || '#/index').replace(/^#\\//, '');
     var bits = raw.split('/');
     show(bits[0] || 'index', bits[1]);
@@ -150,23 +154,11 @@ def build():
     )
 
     banner = (
-        '<div class="previewbar">This is a single file preview of the five page '
-        'site. Every link, menu and form on it works. The contact form is live '
-        'and will send a real message.</div>'
+        '<div class="previewbar">Single file preview of the five page site. '
+        'The contact form is live and sends a real message.</div>'
     )
 
-    extra_css = """
-.previewbar {
-  background: #171717;
-  color: #d4d4d4;
-  font-family: var(--font-body);
-  font-size: 0.87rem;
-  text-align: center;
-  padding: 10px 16px;
-  border-bottom: 1px solid #262626;
-}
-.routed[hidden] { display: none; }
-"""
+    extra_css = ""
 
     html = """<!DOCTYPE html>
 <html lang="en">
@@ -188,11 +180,11 @@ def build():
   <div class="wrap">
     <a class="brand" href="#/index">
       %s
-      <span>Rafter<em>.</em></span>
+      <span>Rafter</span>
     </a>
     <button class="navtoggle" type="button" aria-expanded="false" aria-controls="sitenav">
       <span class="visually_hidden">Open menu</span>
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 8h16M4 16h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
     </button>
     <nav class="nav" id="sitenav" aria-label="Main">
       %s

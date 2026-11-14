@@ -11,7 +11,7 @@
   var nav = document.getElementById('sitenav');
 
   if (toggle && nav) {
-    var mq = window.matchMedia('(max-width: 900px)');
+    var mq = window.matchMedia('(max-width: 820px)');
 
     function applyState() {
       if (mq.matches) {
@@ -201,81 +201,19 @@
 })();
 
 /* Rafter Technologies
-   Motion layer. Scroll reveals, header state, marquee control.
+   Motion layer. Content settles into place once as it scrolls into view,
+   and the header gains a hairline once the page has moved. Nothing loops.
 
    The gate below is the important part. The resting state of a revealed
    element is invisible, so the .js_anim class that switches those rules on
-   is only ever added when JavaScript is running AND the visitor has not
-   asked for reduced motion. No JavaScript, or reduced motion on, and the
-   site renders as plain static content with everything visible. */
+   is only added when JavaScript is running AND the visitor has not asked
+   for reduced motion. Otherwise the site renders as plain static content
+   with everything visible. */
 
 (function () {
   'use strict';
 
-  var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
-  var allowed = !(calm && calm.matches);
-
-  if (!allowed) { return; }
-  document.documentElement.classList.add('js_anim');
-
-  /* If the visitor turns reduced motion on while the page is open, drop the
-     whole motion layer rather than leaving half animated elements behind. */
-  if (calm && calm.addEventListener) {
-    calm.addEventListener('change', function (e) {
-      if (e.matches) {
-        document.documentElement.classList.remove('js_anim');
-        document.querySelectorAll('.reveal, .stagger').forEach(function (el) {
-          el.classList.add('seen');
-        });
-      }
-    });
-  }
-
-  /* ----- Scroll reveal ----- */
-
-  function collect(root) {
-    return (root || document).querySelectorAll('.reveal:not(.seen), .stagger:not(.seen)');
-  }
-
-  var observer = null;
-
-  if ('IntersectionObserver' in window) {
-    observer = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) { return; }
-        entry.target.classList.add('seen');
-        observer.unobserve(entry.target);
-      });
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.06 });
-  }
-
-  function watch(root) {
-    var items = collect(root);
-    items.forEach(function (el) {
-      /* Stagger children 40ms apart. The motion guidance caps this well
-         below the point where a long row starts to drag. */
-      if (el.classList.contains('stagger')) {
-        Array.prototype.slice.call(el.children).forEach(function (child, i) {
-          child.style.transitionDelay = Math.min(i * 40, 400) + 'ms';
-        });
-      }
-      if (observer) {
-        observer.observe(el);
-      } else {
-        el.classList.add('seen');
-      }
-    });
-  }
-
-  watch(document);
-
-  /* The preview build swaps pages in and out, so anything revealed inside a
-     newly shown page needs observing again. */
-  window.addEventListener('hashchange', function () {
-    window.setTimeout(function () { watch(document); }, 40);
-  });
-
-  /* ----- Header state on scroll ----- */
+  /* ----- Header hairline on scroll ----- */
 
   var masthead = document.querySelector('.masthead');
   if (masthead) {
@@ -284,7 +222,7 @@
       if (ticking) { return; }
       ticking = true;
       window.requestAnimationFrame(function () {
-        masthead.classList.toggle('stuck', window.scrollY > 24);
+        masthead.classList.toggle('stuck', window.scrollY > 8);
         ticking = false;
       });
     };
@@ -292,34 +230,55 @@
     onScroll();
   }
 
-  /* ----- Marquee -----
-     Moving content needs a way to stop it. That is a requirement, not a
-     nicety, so the strip gets a real button rather than hover alone. */
+  /* ----- Reveals ----- */
 
-  document.querySelectorAll('.marquee').forEach(function (strip) {
-    var track = strip.querySelector('.track');
-    if (!track) { return; }
+  var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (calm && calm.matches) { return; }
 
-    /* Duplicate the run once so the loop has something to scroll into. The
-       copy is hidden from assistive tech, which should read the list once. */
-    var copy = track.cloneNode(true);
-    copy.setAttribute('aria-hidden', 'true');
-    Array.prototype.slice.call(copy.children).forEach(function (c) {
-      c.setAttribute('aria-hidden', 'true');
+  var root = document.documentElement;
+  root.classList.add('js_anim');
+
+  function showAll() {
+    document.querySelectorAll('.reveal, .stagger').forEach(function (el) {
+      el.classList.add('seen');
     });
-    while (copy.firstChild) { track.appendChild(copy.firstChild); }
+  }
 
-    var stop = document.createElement('button');
-    stop.type = 'button';
-    stop.className = 'marquee_stop';
-    stop.textContent = 'Pause';
-    stop.setAttribute('aria-pressed', 'false');
-    stop.addEventListener('click', function () {
-      var paused = strip.classList.toggle('paused');
-      stop.textContent = paused ? 'Play' : 'Pause';
-      stop.setAttribute('aria-pressed', String(paused));
+  /* If reduced motion is switched on while the page is open, drop the whole
+     layer and show everything. */
+  if (calm && calm.addEventListener) {
+    calm.addEventListener('change', function (e) {
+      if (e.matches) { root.classList.remove('js_anim'); showAll(); }
     });
-    strip.appendChild(stop);
+  }
+
+  if (!('IntersectionObserver' in window)) { showAll(); return; }
+
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (!entry.isIntersecting) { return; }
+      entry.target.classList.add('seen');
+      observer.unobserve(entry.target);
+    });
+  }, { rootMargin: '0px 0px -6% 0px', threshold: 0.05 });
+
+  function watch() {
+    document.querySelectorAll('.reveal:not(.seen), .stagger:not(.seen)').forEach(function (el) {
+      if (el.classList.contains('stagger')) {
+        Array.prototype.slice.call(el.children).forEach(function (child, i) {
+          child.style.transitionDelay = Math.min(i * 70, 350) + 'ms';
+        });
+      }
+      observer.observe(el);
+    });
+  }
+
+  watch();
+
+  /* The single file preview swaps pages in and out, so a newly shown page
+     needs observing again. */
+  window.addEventListener('hashchange', function () {
+    window.setTimeout(watch, 40);
   });
 
 })();
